@@ -1,26 +1,9 @@
 // =============================================
 // DATA MANAGER - WITH GITHUB GIST AUTO-BACKUP
 // =============================================
-//
-// SETUP (one-time):
-//   1. Go to https://github.com/settings/tokens
-//   2. Click "Generate new token (classic)"
-//   3. Give it a name like "Movie Tracker Backup"
-//   4. Check only the "gist" scope
-//   5. Copy the token and paste it below as GITHUB_TOKEN
-//
-//   6. Go to https://gist.github.com
-//   7. Create a new SECRET gist
-//      - Filename: movie-data.json
-//      - Content: []
-//   8. Copy the Gist ID from the URL
-//      (e.g. https://gist.github.com/yourusername/GIST_ID_HERE)
-//      and paste it below as GIST_ID
-//
-// =============================================
 
-const GITHUB_TOKEN = '';  // ← paste your token
-const GIST_ID      = '';        // ← paste your Gist ID
+const GITHUB_TOKEN = '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';
+const GIST_ID      = '28384e87e0185be5e8e8a663c106c11b';
 const GIST_FILE    = 'movie-data.json';
 const STORAGE_KEY  = 'movieTrackerData';
 
@@ -155,7 +138,6 @@ async function restoreFromGist() {
         const data = JSON.parse(file.content);
         if (Array.isArray(data) && data.length > 0) {
             console.log('✅ Restored from Gist:', data.length, 'items');
-            // Save to localStorage immediately so next load is instant
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             return data;
         }
