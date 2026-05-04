@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Statistics - Movie Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="title-section">
+                <h1>🎬 <span>Paaji Cinema Verse</span></h1>
+                <p>Watch Time Analytics</p>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">🏠 Dashboard</a>
+                <a href="list.html" class="nav-link">📋 All Entries</a>
+                <a href="stats.html" class="nav-link active">📊 Statistics</a>
+                <a href="extended-stats.html" class="nav-link">📈 Extended Stats</a>
+                <a href="selective-stats.html" class="nav-link">🎯 Selective Stats</a>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label>📊 Analyze:</label>
+                <select id="statsFilter" onchange="updateStats()">
+                    <option value="all">Both Movies & Shows</option>
+                    <option value="Movie">Movies Only</option>
+                    <option value="TV Show">TV Shows Only</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Watch Time Statistics -->
+        <div class="time-stats-card">
+            <div class="section-title">
+                <span>⏱️</span> Total Watch Time
+            </div>
+            <div class="time-grid" id="timeGrid">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Broken-down Watch Time -->
+        <div class="time-stats-card" style="margin-bottom: 30px;">
+            <div class="section-title">
+                <span>🕰️</span> Watch Time Breakdown
+            </div>
+            <div id="breakdownDisplay" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 0; padding: 10px 0;">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Duration Records -->
+        <div class="stats-grid" id="recordsGrid">
+            <!-- Will be populated dynamically -->
+        </div>
+
+        <!-- Additional Stats -->
+        <div class="stats-grid" id="additionalStats">
+            <!-- Will be populated dynamically -->
+        </div>
+    </div>
+
+    <!-- Save Indicator -->
+    <div class="save-indicator" id="saveIndicator">
+        <span>💾</span>
+        <span>Saved</span>
+    </div>
+
+    <script src="data-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Override page-specific update
+        function updatePageSpecificContent() {
+            updateStats();
+        }
+
+        // Update all statistics
+        function updateStats() {
+            const filter = document.getElementById('statsFilter').value;
+            const filteredData = filterData(filter);
+            
+            updateTimeStats(filteredData);
+            updateBreakdown(filteredData);
+            updateRecords(filteredData, filter);
+            updateAdditionalStats(filteredData);
+        }
+
+        // Update time breakdown
+        function updateTimeStats(data) {
+            const timeGrid = document.getElementById('timeGrid');
+            
+            if (data.length === 0) {
+                timeGrid.innerHTML = `
+                    <div class="time-block"><div class="time-label">Minutes</div><div class="time-value">0</div></div>
+                    <div class="time-block"><div class="time-label">Hours</div><div class="time-value">0</div></div>
+                    <div class="time-block"><div class="time-label">Days</div><div class="time-value">0</div></div>
+                    <div class="time-block"><div class="time-label">Weeks</div><div class="time-value">0</div></div>
+                    <div class="time-block"><div class="time-label">Months</div><div class="time-value">0</div></div>
+                    <div class="time-block"><div class="time-label">Years</div><div class="time-value">0</div></div>
+                `;
+                return;
+            }
+
+            const totalMinutes = data.reduce((sum, item) => sum + item.duration, 0);
+            
+            const minutes = totalMinutes;
+            const hours = (totalMinutes / 60).toFixed(1);
+            const days = (totalMinutes / (60 * 24)).toFixed(1);
+            const weeks = (totalMinutes / (60 * 24 * 7)).toFixed(1);
+            const months = (totalMinutes / (60 * 24 * 30.44)).toFixed(1);
+            const years = (totalMinutes / (60 * 24 * 365.25)).toFixed(1);
+
+            timeGrid.innerHTML = `
+                <div class="time-block">
+                    <div class="time-label">Minutes</div>
+                    <div class="time-value">${Math.round(minutes)}</div>
+                </div>
+                <div class="time-block">
+                    <div class="time-label">Hours</div>
+                    <div class="time-value">${hours}</div>
+                </div>
+                <div class="time-block">
+                    <div class="time-label">Days</div>
+                    <div class="time-value">${days}</div>
+                </div>
+                <div class="time-block">
+                    <div class="time-label">Weeks</div>
+                    <div class="time-value">${weeks}</div>
+                </div>
+                <div class="time-block">
+                    <div class="time-label">Months</div>
+                    <div class="time-value">${months}</div>
+                </div>
+                <div class="time-block">
+                    <div class="time-label">Years</div>
+                    <div class="time-value">${years}</div>
+                </div>
+            `;
+        }
+
+        // Update broken-down watch time (e.g. 0y 1mo 8d 11h 16m)
+        function updateBreakdown(data) {
+            const el = document.getElementById('breakdownDisplay');
+
+            if (data.length === 0) {
+                el.innerHTML = `<span style="color:#94a3b8;">No data available</span>`;
+                return;
+            }
+
+            let remaining = Math.round(data.reduce((sum, item) => sum + item.duration, 0));
+
+            const years  = Math.floor(remaining / (60 * 24 * 365));
+            remaining   -= years  * 60 * 24 * 365;
+            const months = Math.floor(remaining / (60 * 24 * 30));
+            remaining   -= months * 60 * 24 * 30;
+            const days   = Math.floor(remaining / (60 * 24));
+            remaining   -= days   * 60 * 24;
+            const hours  = Math.floor(remaining / 60);
+            const mins   = remaining % 60;
+
+            const units = [
+                { label: 'Years',   value: years  },
+                { label: 'Months',  value: months },
+                { label: 'Days',    value: days   },
+                { label: 'Hours',   value: hours  },
+                { label: 'Minutes', value: mins   },
+            ];
+
+            el.innerHTML = units.map((u, i) => `
+                <div style="display:flex; align-items:center; gap: 0;">
+                    <div style="
+                        background: #1e242b;
+                        border: 1px solid ${u.value > 0 ? '#ffd700' : '#333b45'};
+                        border-radius: 16px;
+                        padding: 18px 24px;
+                        text-align: center;
+                        min-width: 100px;
+                        position: relative;
+                        overflow: hidden;
+                    ">
+                        <div style="
+                            position: absolute; top: 0; left: 0; right: 0; height: 4px;
+                            background: ${u.value > 0 ? 'linear-gradient(90deg,#ffd700,#ffaa00)' : '#333b45'};
+                        "></div>
+                        <div style="color: ${u.value > 0 ? '#ffd700' : '#94a3b8'}; font-size: 2.2em; font-weight: 700; line-height: 1;">${u.value}</div>
+                        <div style="color: #94a3b8; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px;">${u.label}</div>
+                    </div>
+                    ${i < units.length - 1 ? `<div style="color:#ffd700; font-size:1.5em; font-weight:700; padding: 0 6px;">:</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Update duration records
+        function updateRecords(data, filter) {
+            const recordsGrid = document.getElementById('recordsGrid');
+            
+            if (data.length === 0) {
+                recordsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <h3>No Data</h3>
+                        <div class="stat-value">-</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Find highest and lowest duration
+            const highest = data.reduce((max, item) => item.duration > max.duration ? item : max, data[0]);
+            const lowest = data.reduce((min, item) => item.duration < min.duration ? item : min, data[0]);
+
+            // Get all-time highest/lowest regardless of filter
+            const allData = filterData('all');
+            const allHighest = allData.reduce((max, item) => item.duration > max.duration ? item : max, allData[0]);
+            const allLowest = allData.reduce((min, item) => item.duration < min.duration ? item : min, allData[0]);
+
+            recordsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <h3>Longest ${filter === 'all' ? 'Overall' : filter}</h3>
+                    <div class="stat-value">${formatDuration(highest.duration)}</div>
+                    <div style="color: #94a3b8; font-size: 0.9em; margin-top: 5px;">${highest.name}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <h3>Shortest ${filter === 'all' ? 'Overall' : filter}</h3>
+                    <div class="stat-value">${formatDuration(lowest.duration)}</div>
+                    <div style="color: #94a3b8; font-size: 0.9em; margin-top: 5px;">${lowest.name}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🌟</div>
+                    <h3>All-Time Longest</h3>
+                    <div class="stat-value">${formatDuration(allHighest.duration)}</div>
+                    <div style="color: #94a3b8; font-size: 0.9em; margin-top: 5px;">${allHighest.name}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💫</div>
+                    <h3>All-Time Shortest</h3>
+                    <div class="stat-value">${formatDuration(allLowest.duration)}</div>
+                    <div style="color: #94a3b8; font-size: 0.9em; margin-top: 5px;">${allLowest.name}</div>
+                </div>
+            `;
+        }
+
+        // Update additional statistics
+        function updateAdditionalStats(data) {
+            const additionalStats = document.getElementById('additionalStats');
+            
+            if (data.length === 0) {
+                additionalStats.innerHTML = '';
+                return;
+            }
+
+            const totalMinutes = data.reduce((sum, item) => sum + item.duration, 0);
+            const avgDuration = totalMinutes / data.length;
+
+            additionalStats.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <h3>Total Entries</h3>
+                    <div class="stat-value">${data.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <h3>Average Duration</h3>
+                    <div class="stat-value">${formatDuration(avgDuration)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <h3>Year Range</h3>
+                    <div class="stat-value">${Math.min(...data.map(d => d.releaseYear))} - ${Math.max(...data.map(d => d.releaseYear))}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <h3>Total Watch Time</h3>
+                    <div class="stat-value">${Math.round(totalMinutes / 60)}h</div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

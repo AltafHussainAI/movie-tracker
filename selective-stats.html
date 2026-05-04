@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Selective Stats - Movie Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Search & Selection Panel ── */
+        .selection-panel {
+            background: #1e242b;
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 28px;
+            border: 1px solid #333b45;
+        }
+        .search-row {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            background: #161a1f;
+            border: 2px solid #333b45;
+            border-radius: 14px;
+            padding: 13px 18px 13px 44px;
+            color: #ffffff;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+        .search-box input:focus {
+            border-color: #ffd700;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+        }
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1em;
+            pointer-events: none;
+        }
+        .filter-pills {
+            display: flex;
+            gap: 10px;
+        }
+        .pill {
+            background: #161a1f;
+            border: 2px solid #333b45;
+            color: #94a3b8;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+        .pill:hover { border-color: #ffd700; color: #ffd700; }
+        .pill.active { background: #ffd700; border-color: #ffd700; color: #0a0c0f; }
+        /* ── Browseable List ── */
+        .browse-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 6px;
+        }
+        .browse-list::-webkit-scrollbar { width: 6px; }
+        .browse-list::-webkit-scrollbar-track { background: #161a1f; border-radius: 6px; }
+        .browse-list::-webkit-scrollbar-thumb { background: #333b45; border-radius: 6px; }
+        .browse-list::-webkit-scrollbar-thumb:hover { background: #ffd700; }
+        .browse-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            border-radius: 14px;
+            background: #161a1f;
+            border: 1px solid #2a313c;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        .browse-item:hover { border-color: #ffd700; background: #1a2028; }
+        .browse-item.selected {
+            border-color: #ffd700;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.07), transparent);
+        }
+        .browse-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #333b45;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            font-size: 0.75em;
+        }
+        .browse-item.selected .browse-checkbox { background: #ffd700; border-color: #ffd700; color: #0a0c0f; }
+        .browse-item-info { flex: 1; min-width: 0; }
+        .browse-item-name {
+            color: #e2e8f0;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .browse-item.selected .browse-item-name { color: #ffd700; }
+        .browse-item-meta { color: #64748b; font-size: 0.82em; margin-top: 2px; }
+        .browse-item-dur { color: #94a3b8; font-size: 0.88em; font-weight: 600; white-space: nowrap; }
+        .browse-item.selected .browse-item-dur { color: #ffd700; }
+        /* ── Selection Controls ── */
+        .selection-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #2a313c;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .sel-count { color: #94a3b8; font-size: 0.9em; }
+        .sel-count strong { color: #ffd700; }
+        .sel-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+        .sel-btn {
+            background: #161a1f;
+            border: 1px solid #333b45;
+            color: #e2e8f0;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .sel-btn:hover { border-color: #ffd700; color: #ffd700; }
+        .sel-btn.clear:hover { border-color: #ff6b6b; color: #ff6b6b; }
+        .done-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #0a0c0f;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .done-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -4px rgba(255, 215, 0, 0.5);
+        }
+        .done-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        /* ── Select Again bar ── */
+        .select-again-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            background: #1e242b;
+            border: 1px solid #333b45;
+            border-radius: 16px;
+            padding: 14px 22px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .select-again-bar.visible { display: flex; }
+        .select-again-info { color: #94a3b8; font-size: 0.92em; }
+        .select-again-info strong { color: #ffd700; }
+        .select-again-btns { display: flex; gap: 10px; }
+        .reselect-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #0a0c0f;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 10px;
+            font-size: 0.88em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .reselect-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px -4px rgba(255, 215, 0, 0.5);
+        }
+        .reselect-clear-btn {
+            background: #161a1f;
+            border: 1px solid #333b45;
+            color: #ff6b6b;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 0.88em;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .reselect-clear-btn:hover { border-color: #ff6b6b; background: #1e242b; }
+        /* ── Stats Output ── */
+        .stats-output {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+        }
+        .stats-output.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+        .sel-stats-top {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .sel-stats-bottom {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .sstat-card {
+            background: #1e242b;
+            border: 1px solid #333b45;
+            border-radius: 20px;
+            padding: 22px 18px;
+            text-align: center;
+            transition: border-color 0.3s, transform 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .sstat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sstat-card:hover { border-color: #ffd700; transform: translateY(-3px); }
+        .sstat-card:hover::before { opacity: 1; }
+        .sstat-icon { font-size: 1.8em; margin-bottom: 8px; }
+        .sstat-label {
+            color: #64748b;
+            font-size: 0.78em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+        .sstat-value { color: #ffd700; font-size: 1.9em; font-weight: 700; line-height: 1.1; }
+        .sstat-sub { color: #94a3b8; font-size: 0.8em; margin-top: 4px; }
+        .sstat-card.detail .sstat-value { font-size: 1.1em; color: #e2e8f0; }
+        .sstat-card.detail .sstat-meta { color: #ffd700; font-size: 0.82em; margin-top: 5px; }
+        .contribution-section {
+            background: #1e242b;
+            border: 1px solid #333b45;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .contrib-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .contrib-pct { font-size: 2.4em; font-weight: 700; color: #ffd700; }
+        .contrib-label { color: #94a3b8; font-size: 0.9em; }
+        .contrib-bar-bg {
+            height: 14px;
+            background: #161a1f;
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid #2a313c;
+        }
+        .contrib-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, #ffd700, #ffaa00);
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+        }
+        .contrib-footnote { color: #64748b; font-size: 0.82em; margin-top: 10px; text-align: right; }
+        .selected-table-section { margin-top: 4px; }
+        .empty-prompt {
+            text-align: center;
+            padding: 50px 20px;
+            color: #64748b;
+            background: #161a1f;
+            border-radius: 16px;
+            border: 2px dashed #2a313c;
+            margin-top: 24px;
+        }
+        .empty-prompt .ep-icon { font-size: 3em; margin-bottom: 12px; }
+        .empty-prompt p { color: #94a3b8; margin-top: 6px; }
+        .no-results { text-align: center; padding: 30px; color: #64748b; font-size: 0.95em; }
+        /* delete btn (reused from list page style) */
+        .delete-btn {
+            background: #252d36;
+            border: 1px solid #333b45;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #ff6b6b;
+        }
+        .delete-btn:hover { background: #ff6b6b; color: #0a0c0f; }
+        @media (max-width: 900px) {
+            .sel-stats-top, .sel-stats-bottom { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            .sel-stats-top, .sel-stats-bottom { grid-template-columns: 1fr 1fr; }
+            .filter-pills { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="title-section">
+                <h1>🎬 <span>Paaji Cinema Verse</span></h1>
+                <p>Selective Stats • Custom Selection Analysis</p>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">🏠 Dashboard</a>
+                <a href="list.html" class="nav-link">📋 All Entries</a>
+                <a href="stats.html" class="nav-link">📊 Statistics</a>
+                <a href="extended-stats.html" class="nav-link">📈 Extended Stats</a>
+                <a href="selective-stats.html" class="nav-link active">🎯 Selective Stats</a>
+            </div>
+        </div>
+
+        <!-- Selection Panel (hidden after Done is clicked) -->
+        <div class="selection-panel" id="selectionPanel">
+            <div class="section-title"><span>🔎</span> Pick Titles to Analyse</div>
+            <div class="search-row">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search by title…" oninput="renderBrowseList()">
+                </div>
+                <div class="filter-pills">
+                    <button class="pill active" data-filter="all" onclick="setFilter('all')">All</button>
+                    <button class="pill" data-filter="Movie" onclick="setFilter('Movie')">🎬 Movies</button>
+                    <button class="pill" data-filter="TV Show" onclick="setFilter('TV Show')">📺 TV Shows</button>
+                </div>
+            </div>
+            <div class="browse-list" id="browseList"></div>
+            <div class="selection-controls">
+                <span class="sel-count">
+                    <strong id="selCountNum">0</strong> selected
+                    <span id="selCountFiltered" style="color:#64748b;"></span>
+                </span>
+                <div class="sel-btns">
+                    <button class="sel-btn" onclick="selectAllVisible()">✅ Select Visible</button>
+                    <button class="sel-btn clear" onclick="clearSelection()">✖ Clear All</button>
+                    <button class="done-btn" id="doneBtn" onclick="doneSelection()" disabled>📊 Done Selection</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Select Again bar (shown after Done, hidden by default) -->
+        <div class="select-again-bar" id="selectAgainBar">
+            <div class="select-again-info">
+                Showing stats for <strong id="selectAgainCount">0</strong> selected items.
+            </div>
+            <div class="select-again-btns">
+                <button class="reselect-btn" onclick="reopenSelection()">✏️ Change Selection</button>
+                <button class="reselect-clear-btn" onclick="clearSelection()">✖ Clear &amp; Reset</button>
+            </div>
+        </div>
+
+        <!-- Stats output (hidden until Done is clicked) -->
+        <div class="stats-output" id="statsOutput">
+            <div class="sel-stats-top">
+                <div class="sstat-card">
+                    <div class="sstat-icon">⏱️</div>
+                    <div class="sstat-label">Total Watch Time</div>
+                    <div class="sstat-value" id="ssTotalHours">0</div>
+                    <div class="sstat-sub">HOURS</div>
+                </div>
+                <div class="sstat-card">
+                    <div class="sstat-icon">📊</div>
+                    <div class="sstat-label">Avg Watch Time</div>
+                    <div class="sstat-value" id="ssAvgHours">0</div>
+                    <div class="sstat-sub">HOURS</div>
+                </div>
+                <div class="sstat-card">
+                    <div class="sstat-icon">🎞️</div>
+                    <div class="sstat-label">Total Selections</div>
+                    <div class="sstat-value" id="ssCount">0</div>
+                    <div class="sstat-sub">Items Selected</div>
+                </div>
+                <div class="sstat-card">
+                    <div class="sstat-icon">🗓️</div>
+                    <div class="sstat-label">Year Gap and Range</div>
+                    <div class="sstat-value" id="ssYearGap">—</div>
+                    <div class="sstat-sub" id="ssYearRange">—</div>
+                </div>
+            </div>
+            <div class="contribution-section">
+                <div class="contrib-header">
+                    <div>
+                        <div class="sstat-label" style="text-align:left;margin-bottom:4px;">⚖️ Contribution to Total Watchtime</div>
+                        <div class="contrib-label" id="contribDetail">— of — Hours Total</div>
+                    </div>
+                    <div class="contrib-pct" id="ssPct">0%</div>
+                </div>
+                <div class="contrib-bar-bg">
+                    <div class="contrib-bar-fill" id="contribBar"></div>
+                </div>
+                <div class="contrib-footnote" id="contribFootnote"></div>
+            </div>
+            <div class="sel-stats-bottom">
+                <div class="sstat-card detail">
+                    <div class="sstat-icon">🏆</div>
+                    <div class="sstat-label">Longest Duration</div>
+                    <div class="sstat-value" id="ssLongestName">—</div>
+                    <div class="sstat-meta" id="ssLongestDur">—</div>
+                </div>
+                <div class="sstat-card detail">
+                    <div class="sstat-icon">⚡</div>
+                    <div class="sstat-label">Shortest Duration</div>
+                    <div class="sstat-value" id="ssShortestName">—</div>
+                    <div class="sstat-meta" id="ssShortestDur">—</div>
+                </div>
+                <div class="sstat-card detail">
+                    <div class="sstat-icon">🎬</div>
+                    <div class="sstat-label">Movies Selected</div>
+                    <div class="sstat-value" id="ssMovieCount">0</div>
+                    <div class="sstat-meta" id="ssMoviePct">of selection</div>
+                </div>
+                <div class="sstat-card detail">
+                    <div class="sstat-icon">📺</div>
+                    <div class="sstat-label">TV Shows Selected</div>
+                    <div class="sstat-value" id="ssShowCount">0</div>
+                    <div class="sstat-meta" id="ssShowPct">of selection</div>
+                </div>
+            </div>
+            <div class="selected-table-section table-section">
+                <div class="section-title"><span>📋</span> Selected Titles</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>TITLE</th>
+                                <th>YEAR</th>
+                                <th>DURATION</th>
+                                <th>TYPE</th>
+                                <th>REMOVE</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selectedTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-prompt" id="emptyPrompt">
+            <div class="ep-icon">🎯</div>
+            <strong style="color:#e2e8f0;">No Movies/TV Shows selected yet!</strong>
+            <p>Search or browse the list above, select your items, then click <strong style="color:#ffd700;">📊 Done Selection</strong> to see the stats.</p>
+        </div>
+    </div>
+
+    <div class="save-indicator" id="saveIndicator">
+        <span>💾</span><span>Saved</span>
+    </div>
+
+    <script src="data-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let selectedIndices = new Set();
+        let activeFilter = 'all';
+
+        function updatePageSpecificContent() {
+            renderBrowseList();
+        }
+
+        function setFilter(f) {
+            activeFilter = f;
+            document.querySelectorAll('.pill').forEach(p => {
+                p.classList.toggle('active', p.dataset.filter === f);
+            });
+            renderBrowseList();
+        }
+
+        function renderBrowseList() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const list  = document.getElementById('browseList');
+            const filtered = movieData
+                .map((item, idx) => ({ item, idx }))
+                .filter(({ item }) => {
+                    const typeOk = activeFilter === 'all' || item.type === activeFilter;
+                    const nameOk = !query || item.name.toLowerCase().includes(query);
+                    return typeOk && nameOk;
+                });
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="no-results">🔍 No titles match your search.</div>';
+                return;
+            }
+            list.innerHTML = filtered.map(({ item, idx }) => {
+                const sel = selectedIndices.has(idx);
+                return `
+                <div class="browse-item ${sel ? 'selected' : ''}" onclick="toggleSelect(${idx})">
+                    <div class="browse-checkbox">${sel ? '✓' : ''}</div>
+                    <div class="browse-item-info">
+                        <div class="browse-item-name">${item.name}</div>
+                        <div class="browse-item-meta">${item.type} · ${item.releaseYear}</div>
+                    </div>
+                    <div class="browse-item-dur">${formatDuration(item.duration)}</div>
+                </div>`;
+            }).join('');
+            const selInVisible = filtered.filter(({ idx }) => selectedIndices.has(idx)).length;
+            document.getElementById('selCountFiltered').textContent = filtered.length < movieData.length
+                ? ` (${selInVisible} of ${filtered.length} visible)` : '';
+        }
+
+        function updateSelCount() {
+            const count = selectedIndices.size;
+            document.getElementById('selCountNum').textContent = count;
+            document.getElementById('doneBtn').disabled = count === 0;
+        }
+
+        function toggleSelect(idx) {
+            if (selectedIndices.has(idx)) {
+                selectedIndices.delete(idx);
+            } else {
+                selectedIndices.add(idx);
+            }
+            updateSelCount();
+            renderBrowseList();
+        }
+
+        function selectAllVisible() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            movieData.forEach((item, idx) => {
+                const typeOk = activeFilter === 'all' || item.type === activeFilter;
+                const nameOk = !query || item.name.toLowerCase().includes(query);
+                if (typeOk && nameOk) selectedIndices.add(idx);
+            });
+            updateSelCount();
+            renderBrowseList();
+        }
+
+        function clearSelection() {
+            selectedIndices.clear();
+            updateSelCount();
+            renderBrowseList();
+            // Show panel, hide bar & stats
+            document.getElementById('selectionPanel').style.display = '';
+            document.getElementById('selectAgainBar').classList.remove('visible');
+            document.getElementById('statsOutput').classList.remove('visible');
+            document.getElementById('emptyPrompt').style.display = 'block';
+        }
+
+        function doneSelection() {
+            const count = selectedIndices.size;
+            if (count === 0) return;
+
+            computeAndRenderStats();
+
+            // Hide panel, show "Select Again" bar
+            document.getElementById('selectionPanel').style.display = 'none';
+            document.getElementById('selectAgainBar').classList.add('visible');
+            document.getElementById('selectAgainCount').textContent = count;
+            document.getElementById('emptyPrompt').style.display = 'none';
+            document.getElementById('statsOutput').classList.add('visible');
+        }
+
+        function reopenSelection() {
+            // Show panel again, hide bar (keep stats visible in background)
+            document.getElementById('selectionPanel').style.display = '';
+            document.getElementById('selectAgainBar').classList.remove('visible');
+            // Refresh list to reflect current selection state
+            renderBrowseList();
+            updateSelCount();
+        }
+
+        function computeAndRenderStats() {
+            const count = selectedIndices.size;
+            const sel   = [...selectedIndices].map(i => movieData[i]);
+            const totalMin  = sel.reduce((s, x) => s + x.duration, 0);
+            const totalHrs  = totalMin / 60;
+            const avgHrs    = totalHrs / count;
+            const years     = sel.map(x => x.releaseYear);
+            const minYear   = Math.min(...years);
+            const maxYear   = Math.max(...years);
+            const yearGap   = maxYear - minYear + 1;
+            const longest   = sel.reduce((a, b) => b.duration > a.duration ? b : a);
+            const shortest  = sel.reduce((a, b) => b.duration < a.duration ? b : a);
+            const totalAllMin = movieData.reduce((s, x) => s + x.duration, 0);
+            const pct       = totalAllMin > 0 ? (totalMin / totalAllMin) * 100 : 0;
+            const movies    = sel.filter(x => x.type === 'Movie');
+            const shows     = sel.filter(x => x.type === 'TV Show');
+
+            document.getElementById('ssTotalHours').textContent = totalHrs.toFixed(1);
+            document.getElementById('ssAvgHours').textContent   = avgHrs.toFixed(1);
+            document.getElementById('ssCount').textContent      = count;
+            if (minYear === maxYear) {
+                document.getElementById('ssYearGap').textContent   = '1';
+                document.getElementById('ssYearRange').textContent = `year: ${minYear}`;
+            } else {
+                document.getElementById('ssYearGap').textContent   = yearGap;
+                document.getElementById('ssYearRange').textContent = `${minYear} – ${maxYear}`;
+            }
+            document.getElementById('ssLongestName').textContent  = longest.name;
+            document.getElementById('ssLongestDur').textContent   = `${formatDuration(longest.duration)} · ${longest.releaseYear}`;
+            document.getElementById('ssShortestName').textContent = shortest.name;
+            document.getElementById('ssShortestDur').textContent  = `${formatDuration(shortest.duration)} · ${shortest.releaseYear}`;
+            document.getElementById('ssMovieCount').textContent   = movies.length;
+            document.getElementById('ssMoviePct').textContent     = `${Math.round(movies.length / count * 100)}% of selection`;
+            document.getElementById('ssShowCount').textContent    = shows.length;
+            document.getElementById('ssShowPct').textContent      = `${Math.round(shows.length / count * 100)}% of selection`;
+            document.getElementById('ssPct').textContent         = pct.toFixed(1) + '%';
+            document.getElementById('contribBar').style.width    = Math.min(pct, 100) + '%';
+            document.getElementById('contribDetail').textContent = `${totalHrs.toFixed(1)} of ${(totalAllMin / 60).toFixed(1)} hours total`;
+            document.getElementById('contribFootnote').textContent = `Based on ${movieData.length} total entries in your collection`;
+
+            const sorted = [...selectedIndices]
+                .map(i => ({ item: movieData[i], idx: i }))
+                .sort((a, b) => a.item.name.localeCompare(b.item.name));
+            document.getElementById('selectedTableBody').innerHTML = sorted.map(({ item, idx }, row) => `
+                <tr>
+                    <td style="color:#ffd700;">${row + 1}</td>
+                    <td style="color:#ffffff;">${item.name}</td>
+                    <td><span class="year-badge">${item.releaseYear}</span></td>
+                    <td style="color:#ffd700;">${formatDuration(item.duration)}</td>
+                    <td><span class="type-badge">${item.type}</span></td>
+                    <td>
+                        <button class="delete-btn" onclick="removeFromSelection(${idx})">
+                            <span>✖</span> Remove
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function removeFromSelection(idx) {
+            selectedIndices.delete(idx);
+            updateSelCount();
+            renderBrowseList();
+            if (selectedIndices.size === 0) {
+                clearSelection();
+            } else {
+                computeAndRenderStats();
+                document.getElementById('selectAgainCount').textContent = selectedIndices.size;
+            }
+        }
+
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) { loadMovieData(); updatePageSpecificContent(); }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📈 Extended Stats - Movie Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="title-section">
+                <h1>🎬 <span>Paaji Cinema Verse</span></h1>
+                <p>Year-by-Year Analysis</p>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">🏠 Dashboard</a>
+                <a href="list.html" class="nav-link">📋 All Entries</a>
+                <a href="stats.html" class="nav-link">📊 Statistics</a>
+                <a href="extended-stats.html" class="nav-link active">📈 Extended Stats</a>
+                <a href="selective-stats.html" class="nav-link">🎯 Selective Stats</a>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label>📊 Analyze:</label>
+                <select id="extendedFilter" onchange="updateExtendedStats()">
+                    <option value="all">Both Movies & Shows</option>
+                    <option value="Movie">Movies Only</option>
+                    <option value="TV Show">TV Shows Only</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Year Summary Cards -->
+        <div class="stats-grid" id="yearSummary">
+            <!-- Will be populated dynamically -->
+        </div>
+
+        <!-- Year-by-Year Breakdown -->
+        <div class="table-section">
+            <div class="section-title">
+                <span>📅</span> Yearly Statistics
+            </div>
+            <div class="year-grid" id="yearGrid">
+                <!-- Will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Indicator -->
+    <div class="save-indicator" id="saveIndicator">
+        <span>💾</span>
+        <span>Saved</span>
+    </div>
+
+    <script src="data-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Override page-specific update
+        function updatePageSpecificContent() {
+            updateExtendedStats();
+        }
+
+        // Update extended statistics
+        function updateExtendedStats() {
+            const filter = document.getElementById('extendedFilter').value;
+            const filteredData = filterData(filter);
+            
+            updateYearSummary(filteredData);
+            updateYearGrid(filteredData);
+        }
+
+        // Update year summary cards
+        function updateYearSummary(data) {
+            const yearSummary = document.getElementById('yearSummary');
+            
+            if (data.length === 0) {
+                yearSummary.innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <h3>No Data</h3>
+                        <div class="stat-value">-</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Get unique years
+            const years = [...new Set(data.map(item => item.releaseYear))];
+            
+            // Find most and least watched years
+            const yearCounts = {};
+            data.forEach(item => {
+                yearCounts[item.releaseYear] = (yearCounts[item.releaseYear] || 0) + 1;
+            });
+
+            let mostWatchedYear = null;
+            let mostWatchedCount = 0;
+            let leastWatchedYear = null;
+            let leastWatchedCount = Infinity;
+
+            for (const [year, count] of Object.entries(yearCounts)) {
+                if (count > mostWatchedCount) {
+                    mostWatchedCount = count;
+                    mostWatchedYear = year;
+                }
+                if (count < leastWatchedCount) {
+                    leastWatchedCount = count;
+                    leastWatchedYear = year;
+                }
+            }
+
+            yearSummary.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <h3>Unique Years</h3>
+                    <div class="stat-value">${years.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🏆</div>
+                    <h3>Most Watched Year</h3>
+                    <div class="stat-value">${mostWatchedYear}</div>
+                    <div style="color: #94a3b8; font-size: 0.9em;">${mostWatchedCount} entries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <h3>Least Watched Year</h3>
+                    <div class="stat-value">${leastWatchedYear}</div>
+                    <div style="color: #94a3b8; font-size: 0.9em;">${leastWatchedCount} entries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <h3>Year Range</h3>
+                    <div class="stat-value">${Math.min(...years)} - ${Math.max(...years)}</div>
+                </div>
+            `;
+        }
+
+        // Update year grid
+        function updateYearGrid(data) {
+            const yearGrid = document.getElementById('yearGrid');
+            
+            if (data.length === 0) {
+                yearGrid.innerHTML = '<div class="empty-message">✨ No data available</div>';
+                return;
+            }
+
+            // Group by year
+            const yearGroups = {};
+            data.forEach(item => {
+                if (!yearGroups[item.releaseYear]) {
+                    yearGroups[item.releaseYear] = [];
+                }
+                yearGroups[item.releaseYear].push(item);
+            });
+
+            // Sort years descending
+            const sortedYears = Object.keys(yearGroups).sort((a, b) => b - a);
+
+            let html = '';
+            sortedYears.forEach(year => {
+                const yearData = yearGroups[year];
+                const totalMinutes = yearData.reduce((sum, item) => sum + item.duration, 0);
+                const totalHours = (totalMinutes / 60).toFixed(1);
+                
+                // Separate movies and shows
+                const movies = yearData.filter(item => item.type === 'Movie');
+                const shows = yearData.filter(item => item.type === 'TV Show');
+
+                html += `
+                    <div class="year-card">
+                        <div class="year-header">${year}</div>
+                        <div class="year-stats">
+                            <div class="year-stat-item">
+                                <span>Total Entries:</span>
+                                <span style="color: #ffd700;">${yearData.length}</span>
+                            </div>
+                            <div class="year-stat-item">
+                                <span>Movies:</span>
+                                <span>${movies.length}</span>
+                            </div>
+                            <div class="year-stat-item">
+                                <span>TV Shows:</span>
+                                <span>${shows.length}</span>
+                            </div>
+                            <div class="year-stat-item">
+                                <span>Total Watch Time:</span>
+                                <span style="color: #ffd700;">${totalHours} hours</span>
+                            </div>
+                            <div class="year-stat-item">
+                                <span>Average Duration:</span>
+                                <span>${formatDuration(totalMinutes / yearData.length)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            yearGrid.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

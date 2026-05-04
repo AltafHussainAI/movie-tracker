@@ -1,0 +1,3686 @@
+{
+  "entries": [
+    {
+      "name": "Lagaan",
+      "releaseYear": 2001,
+      "duration": 220,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Koi... Mil Gaya",
+      "releaseYear": 2003,
+      "duration": 170,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Paatshaala",
+      "releaseYear": 2010,
+      "duration": 122,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Zindagi Na Milegi Dobara",
+      "releaseYear": 2011,
+      "duration": 155,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Patiala House",
+      "releaseYear": 2011,
+      "duration": 140,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Life of Pi",
+      "releaseYear": 2012,
+      "duration": 127,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Joker (Akshay Kumar)",
+      "releaseYear": 2012,
+      "duration": 100,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Barfi!",
+      "releaseYear": 2012,
+      "duration": 150,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Grand Masti",
+      "releaseYear": 2013,
+      "duration": 137,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Humshakals",
+      "releaseYear": 2014,
+      "duration": 158,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "PK",
+      "releaseYear": 2014,
+      "duration": 150,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Welcome to Karachi",
+      "releaseYear": 2015,
+      "duration": 110,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Bajrangi Bhaijaan",
+      "releaseYear": 2015,
+      "duration": 150,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "The Boy",
+      "releaseYear": 2016,
+      "duration": 97,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Behen Hogi Teri",
+      "releaseYear": 2017,
+      "duration": 128,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Raees",
+      "releaseYear": 2017,
+      "duration": 143,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Fryday",
+      "releaseYear": 2018,
+      "duration": 114,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Hichki",
+      "releaseYear": 2018,
+      "duration": 116,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Super 30",
+      "releaseYear": 2019,
+      "duration": 155,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Pushpa: The Rise",
+      "releaseYear": 2021,
+      "duration": 179,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "The Kerala Story",
+      "releaseYear": 2023,
+      "duration": 138,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Dunki",
+      "releaseYear": 2023,
+      "duration": 161,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "OMG 2",
+      "releaseYear": 2023,
+      "duration": 150,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Khel Khel Mein",
+      "releaseYear": 2024,
+      "duration": 131,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Maharaja",
+      "releaseYear": 2024,
+      "duration": 140,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Harom Hara",
+      "releaseYear": 2024,
+      "duration": 154,
+      "type": "Movie",
+      "group": "Indian"
+    },
+    {
+      "name": "Khuda Aur Muhabbat",
+      "releaseYear": 2011,
+      "duration": 560,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Khuda Aur Muhabbat 2",
+      "releaseYear": 2016,
+      "duration": 920,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Khuda Aur Muhabbat 3",
+      "releaseYear": 2021,
+      "duration": 1560,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Shehr-e-Zaat",
+      "releaseYear": 2012,
+      "duration": 855,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Pyare Afzal",
+      "releaseYear": 2013,
+      "duration": 1480,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Alif Allah aur Insaan",
+      "releaseYear": 2018,
+      "duration": 1634,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Suno Chanda",
+      "releaseYear": 2018,
+      "duration": 1200,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Zan Mureed",
+      "releaseYear": 2018,
+      "duration": 1064,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Khaani",
+      "releaseYear": 2018,
+      "duration": 1178,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Aik Mohabbat Kaafi Hai",
+      "releaseYear": 2018,
+      "duration": 1080,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Aatish",
+      "releaseYear": 2018,
+      "duration": 1120,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Ranjha Ranjha Kardi",
+      "releaseYear": 2018,
+      "duration": 1240,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Be Dardi",
+      "releaseYear": 2018,
+      "duration": 1160,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Uraan",
+      "releaseYear": 2019,
+      "duration": 1872,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Mere Paas Tum Ho",
+      "releaseYear": 2019,
+      "duration": 920,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Anaa",
+      "releaseYear": 2019,
+      "duration": 1200,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Deewangi",
+      "releaseYear": 2020,
+      "duration": 1558,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Alif",
+      "releaseYear": 2020,
+      "duration": 1008,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Jo Tu Chahe",
+      "releaseYear": 2020,
+      "duration": 1634,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Kahin Deep Jallay",
+      "releaseYear": 2020,
+      "duration": 1292,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Mohabbat Tujhe Alvida",
+      "releaseYear": 2020,
+      "duration": 1120,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Raaz-e-Ulfat",
+      "releaseYear": 2020,
+      "duration": 1520,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Ehd-e-Wafa",
+      "releaseYear": 2020,
+      "duration": 1000,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Thora sa Haq",
+      "releaseYear": 2020,
+      "duration": 1400,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Parizaad",
+      "releaseYear": 2021,
+      "duration": 1160,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Laapata",
+      "releaseYear": 2021,
+      "duration": 880,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Hum Kahan Ke Sachay Thay",
+      "releaseYear": 2021,
+      "duration": 880,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Chupke Chupke",
+      "releaseYear": 2021,
+      "duration": 1200,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Raqs-e-Bismil",
+      "releaseYear": 2021,
+      "duration": 1120,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Hum Tum",
+      "releaseYear": 2022,
+      "duration": 1240,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Introverts",
+      "releaseYear": 2023,
+      "duration": 120,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Wadera in Love",
+      "releaseYear": 2023,
+      "duration": 52,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "22 Qadam",
+      "releaseYear": 2023,
+      "duration": 1150,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Idiot",
+      "releaseYear": 2023,
+      "duration": 860,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Akhara",
+      "releaseYear": 2024,
+      "duration": 1280,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Khaie",
+      "releaseYear": 2024,
+      "duration": 1040,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Kabhi Main Kabhi Tum",
+      "releaseYear": 2024,
+      "duration": 1330,
+      "type": "TV Show",
+      "group": "Pakistani Dramas"
+    },
+    {
+      "name": "Harry Potter and the Sorcerer's Stone",
+      "releaseYear": 2001,
+      "duration": 152,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Chamber of Secrets",
+      "releaseYear": 2002,
+      "duration": 161,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Prisoner of Azkaban",
+      "releaseYear": 2004,
+      "duration": 142,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Goblet of Fire",
+      "releaseYear": 2005,
+      "duration": 157,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Order of the Phoenix",
+      "releaseYear": 2007,
+      "duration": 138,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Half-Blood Prince",
+      "releaseYear": 2009,
+      "duration": 153,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Deathly Hallows pt. 1",
+      "releaseYear": 2010,
+      "duration": 146,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Harry Potter and the Deathly Hallows pt. 2",
+      "releaseYear": 2011,
+      "duration": 138,
+      "type": "Movie",
+      "group": "Harry Potter"
+    },
+    {
+      "name": "Batman Begins",
+      "releaseYear": 2005,
+      "duration": 155,
+      "type": "Movie",
+      "group": "Christopher Nolan"
+    },
+    {
+      "name": "The Dark Knight",
+      "releaseYear": 2008,
+      "duration": 140,
+      "type": "Movie",
+      "group": "Christopher Nolan"
+    },
+    {
+      "name": "Inception",
+      "releaseYear": 2010,
+      "duration": 148,
+      "type": "Movie",
+      "group": "Christopher Nolan"
+    },
+    {
+      "name": "Intersteller",
+      "releaseYear": 2014,
+      "duration": 169,
+      "type": "Movie",
+      "group": "Christopher Nolan"
+    },
+    {
+      "name": "Oppenheimer",
+      "releaseYear": 2023,
+      "duration": 180,
+      "type": "Movie",
+      "group": "Christopher Nolan"
+    },
+    {
+      "name": "Baby's Day Out",
+      "releaseYear": 1994,
+      "duration": 99,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "The Shawshank Redemption",
+      "releaseYear": 1994,
+      "duration": 142,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Rush Hour",
+      "releaseYear": 1998,
+      "duration": 97,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Rush Hour 2",
+      "releaseYear": 2001,
+      "duration": 90,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Rush Hour 3",
+      "releaseYear": 2007,
+      "duration": 90,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "PotC: The Curse of the Black Pearl",
+      "releaseYear": 2003,
+      "duration": 143,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Shutter Island",
+      "releaseYear": 2010,
+      "duration": 138,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "The Karate Kid",
+      "releaseYear": 2010,
+      "duration": 135,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Super 8",
+      "releaseYear": 2011,
+      "duration": 112,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "John Wick",
+      "releaseYear": 2014,
+      "duration": 101,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "IT Chapter One",
+      "releaseYear": 2017,
+      "duration": 135,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "IT Chapter Two",
+      "releaseYear": 2019,
+      "duration": 169,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Enola Holmes",
+      "releaseYear": 2020,
+      "duration": 123,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Enola Holmes 2",
+      "releaseYear": 2022,
+      "duration": 129,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Small Things Like These",
+      "releaseYear": 2024,
+      "duration": 98,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "Frankenstein",
+      "releaseYear": 2025,
+      "duration": 150,
+      "type": "Movie",
+      "group": "Movies"
+    },
+    {
+      "name": "The Lion King",
+      "releaseYear": 1994,
+      "duration": 88,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Mufasa: The Lion King",
+      "releaseYear": 2024,
+      "duration": 118,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Chicken Run",
+      "releaseYear": 2000,
+      "duration": 84,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Shrek",
+      "releaseYear": 2001,
+      "duration": 90,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Shrek 2",
+      "releaseYear": 2004,
+      "duration": 93,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Shrek the Third",
+      "releaseYear": 2007,
+      "duration": 93,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Shrek Forever After",
+      "releaseYear": 2010,
+      "duration": 93,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Monsters, Inc",
+      "releaseYear": 2001,
+      "duration": 92,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Spirited Away",
+      "releaseYear": 2001,
+      "duration": 125,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "The Incredibles",
+      "releaseYear": 2004,
+      "duration": 115,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "The Incredibles 2",
+      "releaseYear": 2018,
+      "duration": 118,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Kung Fu Panda",
+      "releaseYear": 2008,
+      "duration": 92,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Kung Fu Panda 2",
+      "releaseYear": 2011,
+      "duration": 90,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "How to Train Your Dragon",
+      "releaseYear": 2010,
+      "duration": 98,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "How to Train Your Dragon 2",
+      "releaseYear": 2014,
+      "duration": 102,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "How to Train Your Dragon: The Hidden World",
+      "releaseYear": 2019,
+      "duration": 104,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Despicable Me",
+      "releaseYear": 2010,
+      "duration": 95,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Despicable Me 2",
+      "releaseYear": 2013,
+      "duration": 90,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Despicable Me 3",
+      "releaseYear": 2017,
+      "duration": 80,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Despicable Me 4",
+      "releaseYear": 2024,
+      "duration": 85,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Minions",
+      "releaseYear": 2015,
+      "duration": 91,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Tangled",
+      "releaseYear": 2010,
+      "duration": 100,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Puss in Boots",
+      "releaseYear": 2011,
+      "duration": 90,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Brave",
+      "releaseYear": 2012,
+      "duration": 93,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Ice Age: Continental Drift",
+      "releaseYear": 2012,
+      "duration": 88,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Frozen",
+      "releaseYear": 2013,
+      "duration": 102,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Frozen 2",
+      "releaseYear": 2019,
+      "duration": 103,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Big Hero 6",
+      "releaseYear": 2014,
+      "duration": 102,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Moana",
+      "releaseYear": 2016,
+      "duration": 107,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Moana 2",
+      "releaseYear": 2024,
+      "duration": 100,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Coco",
+      "releaseYear": 2017,
+      "duration": 105,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "The Boss Baby",
+      "releaseYear": 2017,
+      "duration": 97,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "The Donkey King",
+      "releaseYear": 2018,
+      "duration": 80,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Alita: Battle Angel",
+      "releaseYear": 2019,
+      "duration": 122,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "The Mitchells vs. the Machines",
+      "releaseYear": 2021,
+      "duration": 113,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Luca",
+      "releaseYear": 2021,
+      "duration": 95,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Encanto",
+      "releaseYear": 2021,
+      "duration": 102,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Raya and the Last Dragon",
+      "releaseYear": 2021,
+      "duration": 107,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Turning Red",
+      "releaseYear": 2022,
+      "duration": 100,
+      "type": "Movie",
+      "group": "Animated Movies"
+    },
+    {
+      "name": "Jumanji",
+      "releaseYear": 1995,
+      "duration": 100,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Jumanji: Welcome to the Jungle",
+      "releaseYear": 2017,
+      "duration": 115,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Jumanji: The Next Level",
+      "releaseYear": 2019,
+      "duration": 120,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Narnia: The Lion, the Witch and the Wardrobe",
+      "releaseYear": 2005,
+      "duration": 143,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Stardust",
+      "releaseYear": 2007,
+      "duration": 128,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Bridge to Terabithia",
+      "releaseYear": 2007,
+      "duration": 96,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Alice in Wonderland",
+      "releaseYear": 2010,
+      "duration": 108,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Snow White and the Huntsman",
+      "releaseYear": 2012,
+      "duration": 127,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Maleficent",
+      "releaseYear": 2014,
+      "duration": 97,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Maleficent: Mistress of Evil",
+      "releaseYear": 2019,
+      "duration": 118,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Paddington",
+      "releaseYear": 2014,
+      "duration": 95,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Cinderella",
+      "releaseYear": 2015,
+      "duration": 105,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Beauty and the Beast",
+      "releaseYear": 2017,
+      "duration": 129,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "The Little Mermaid",
+      "releaseYear": 2023,
+      "duration": 135,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Lilo & Stich",
+      "releaseYear": 2025,
+      "duration": 108,
+      "type": "Movie",
+      "group": "Semi-animated+Magical Movies"
+    },
+    {
+      "name": "Spider-Man",
+      "releaseYear": 2002,
+      "duration": 121,
+      "type": "Movie",
+      "group": "Marvel"
+    },
+    {
+      "name": "Spider-Man 2",
+      "releaseYear": 2004,
+      "duration": 127,
+      "type": "Movie",
+      "group": "Marvel"
+    },
+    {
+      "name": "Spider-Man 3",
+      "releaseYear": 2007,
+      "duration": 139,
+      "type": "Movie",
+      "group": "Marvel"
+    },
+    {
+      "name": "The Amazing Spider-Man",
+      "releaseYear": 2012,
+      "duration": 136,
+      "type": "Movie",
+      "group": "Marvel"
+    },
+    {
+      "name": "The Amazing Spider-Man 2",
+      "releaseYear": 2014,
+      "duration": 142,
+      "type": "Movie",
+      "group": "Marvel"
+    },
+    {
+      "name": "Iron Man",
+      "releaseYear": 2008,
+      "duration": 126,
+      "type": "Movie",
+      "group": "MCU Phase 1"
+    },
+    {
+      "name": "The Incredible Hulk",
+      "releaseYear": 2008,
+      "duration": 112,
+      "type": "Movie",
+      "group": "MCU Phase 1"
+    },
+    {
+      "name": "Iron Man 2",
+      "releaseYear": 2010,
+      "duration": 124,
+      "type": "Movie",
+      "group": "MCU Phase 1"
+    },
+    {
+      "name": "Thor",
+      "releaseYear": 2011,
+      "duration": 115,
+      "type": "Movie",
+      "group": "MCU Phase 1"
+    },
+    {
+      "name": "Captain America: The First Avenger",
+      "releaseYear": 2011,
+      "duration": 124,
+      "type": "Movie",
+      "group": "MCU Phase 1"
+    },
+    {
+      "name": "The Avengers",
+      "releaseYear": 2012,
+      "duration": 143,
+      "type": "Movie",
+      "group": "MCU Phase 1"
+    },
+    {
+      "name": "Iron Man 3",
+      "releaseYear": 2013,
+      "duration": 130,
+      "type": "Movie",
+      "group": "MCU Phase 2"
+    },
+    {
+      "name": "Thor: The Dark World",
+      "releaseYear": 2013,
+      "duration": 112,
+      "type": "Movie",
+      "group": "MCU Phase 2"
+    },
+    {
+      "name": "Captain America: The Winter Soldier",
+      "releaseYear": 2014,
+      "duration": 136,
+      "type": "Movie",
+      "group": "MCU Phase 2"
+    },
+    {
+      "name": "The Guardians of the Galaxy",
+      "releaseYear": 2014,
+      "duration": 122,
+      "type": "Movie",
+      "group": "MCU Phase 2"
+    },
+    {
+      "name": "Avengers: Age of Ultron",
+      "releaseYear": 2015,
+      "duration": 141,
+      "type": "Movie",
+      "group": "MCU Phase 2"
+    },
+    {
+      "name": "Ant-Man",
+      "releaseYear": 2015,
+      "duration": 117,
+      "type": "Movie",
+      "group": "MCU Phase 2"
+    },
+    {
+      "name": "Captain America: Civil War",
+      "releaseYear": 2016,
+      "duration": 147,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Doctor Strange",
+      "releaseYear": 2016,
+      "duration": 115,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "The Guardians of the Galaxy 2",
+      "releaseYear": 2017,
+      "duration": 136,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Spider-Man: Homecoming",
+      "releaseYear": 2017,
+      "duration": 133,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Thor: Ragnarok",
+      "releaseYear": 2017,
+      "duration": 130,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Black Panther",
+      "releaseYear": 2018,
+      "duration": 134,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Avengers: Infinity War",
+      "releaseYear": 2018,
+      "duration": 149,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Ant-Man and the Wasp",
+      "releaseYear": 2018,
+      "duration": 118,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Captain Marvel",
+      "releaseYear": 2019,
+      "duration": 124,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Avengers: Endgame",
+      "releaseYear": 2019,
+      "duration": 181,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Spider-Man: Far From Home",
+      "releaseYear": 2019,
+      "duration": 129,
+      "type": "Movie",
+      "group": "MCU Phase 3"
+    },
+    {
+      "name": "Black Widow",
+      "releaseYear": 2021,
+      "duration": 134,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Shang-Chi and the Legends of Ten Rings",
+      "releaseYear": 2021,
+      "duration": 132,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Eternals",
+      "releaseYear": 2021,
+      "duration": 156,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Spider-Man: No Way Home",
+      "releaseYear": 2021,
+      "duration": 148,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Doctor Strange in the Multiverse of Madness",
+      "releaseYear": 2022,
+      "duration": 126,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Thor: Love and Thunder",
+      "releaseYear": 2022,
+      "duration": 118,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Black Panther: Wakanda Forever",
+      "releaseYear": 2022,
+      "duration": 161,
+      "type": "Movie",
+      "group": "MCU Phase 4"
+    },
+    {
+      "name": "Ant-Man and the Wasp: Quantumania",
+      "releaseYear": 2023,
+      "duration": 124,
+      "type": "Movie",
+      "group": "MCU Phase 5"
+    },
+    {
+      "name": "The Guardians of the Galaxy 3",
+      "releaseYear": 2023,
+      "duration": 150,
+      "type": "Movie",
+      "group": "MCU Phase 5"
+    },
+    {
+      "name": "The Marvels",
+      "releaseYear": 2023,
+      "duration": 105,
+      "type": "Movie",
+      "group": "MCU Phase 5"
+    },
+    {
+      "name": "Deadpool & Wolverine",
+      "releaseYear": 2024,
+      "duration": 128,
+      "type": "Movie",
+      "group": "MCU Phase 5"
+    },
+    {
+      "name": "Captain America: Brave New World",
+      "releaseYear": 2025,
+      "duration": 118,
+      "type": "Movie",
+      "group": "MCU Phase 5"
+    },
+    {
+      "name": "Thunderbolts*",
+      "releaseYear": 2025,
+      "duration": 126,
+      "type": "Movie",
+      "group": "MCU Phase 5"
+    },
+    {
+      "name": "The Fantastic Four: First Steps",
+      "releaseYear": 2025,
+      "duration": 115,
+      "type": "Movie",
+      "group": "MCU Phase 6"
+    },
+    {
+      "name": "Drake & Josh",
+      "releaseYear": 2004,
+      "duration": 144,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Drake & Josh 2",
+      "releaseYear": 2004,
+      "duration": 322,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly",
+      "releaseYear": 2007,
+      "duration": 588,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly 2",
+      "releaseYear": 2008,
+      "duration": 588,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly 3",
+      "releaseYear": 2009,
+      "duration": 460,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly 4",
+      "releaseYear": 2010,
+      "duration": 299,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly 5",
+      "releaseYear": 2011,
+      "duration": 253,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly 6",
+      "releaseYear": 2012,
+      "duration": 345,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly Reboot",
+      "releaseYear": 2021,
+      "duration": 299,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly Reboot 2",
+      "releaseYear": 2022,
+      "duration": 230,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "iCarly Reboot 3",
+      "releaseYear": 2023,
+      "duration": 220,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Victorious",
+      "releaseYear": 2010,
+      "duration": 400,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Victorious 2",
+      "releaseYear": 2011,
+      "duration": 260,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones",
+      "releaseYear": 2011,
+      "duration": 567,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 2",
+      "releaseYear": 2012,
+      "duration": 549,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 3",
+      "releaseYear": 2013,
+      "duration": 558,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 4",
+      "releaseYear": 2014,
+      "duration": 545,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 5",
+      "releaseYear": 2015,
+      "duration": 563,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 6",
+      "releaseYear": 2016,
+      "duration": 560,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 7",
+      "releaseYear": 2017,
+      "duration": 440,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Game Of Thrones 8",
+      "releaseYear": 2019,
+      "duration": 440,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Attack on Titan",
+      "releaseYear": 2013,
+      "duration": 600,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Attack on Titan 2",
+      "releaseYear": 2017,
+      "duration": 280,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Attack on Titan 3",
+      "releaseYear": 2019,
+      "duration": 520,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Attack on Titan 4",
+      "releaseYear": 2023,
+      "duration": 810,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Peaky Blinders",
+      "releaseYear": 2013,
+      "duration": 330,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dirilis: Ertugrul",
+      "releaseYear": 2015,
+      "duration": 3380,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dirilis: Ertugrul 2",
+      "releaseYear": 2016,
+      "duration": 4550,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dirilis: Ertugrul 3",
+      "releaseYear": 2017,
+      "duration": 3900,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dirilis: Ertugrul 4",
+      "releaseYear": 2018,
+      "duration": 3900,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dirilis: Ertugrul 5",
+      "releaseYear": 2019,
+      "duration": 3770,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Kurulus: Osman",
+      "releaseYear": 2020,
+      "duration": 3510,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Kurulus: Osman 2",
+      "releaseYear": 2021,
+      "duration": 5180,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Kurulus: Osman 3",
+      "releaseYear": 2022,
+      "duration": 4810,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Younus Emre: Askin Yolculugu",
+      "releaseYear": 2015,
+      "duration": 1540,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Nizam-e-Alam",
+      "releaseYear": 2021,
+      "duration": 5100,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Mendirman Jaloliddin",
+      "releaseYear": 2021,
+      "duration": 910,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Stranger Things",
+      "releaseYear": 2016,
+      "duration": 406,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Stranger Things 2",
+      "releaseYear": 2017,
+      "duration": 465,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Stranger Things 3",
+      "releaseYear": 2019,
+      "duration": 445,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Stranger Things 4",
+      "releaseYear": 2022,
+      "duration": 770,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Stranger Things 5",
+      "releaseYear": 2025,
+      "duration": 610,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Stranger Things: Tales from '85",
+      "releaseYear": 2026,
+      "duration": 239,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Ren: The Girl with the Mark",
+      "releaseYear": 2016,
+      "duration": 50,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Ren: The Girl with the Mark 2",
+      "releaseYear": 2024,
+      "duration": 60,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dark",
+      "releaseYear": 2017,
+      "duration": 490,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dark 2",
+      "releaseYear": 2019,
+      "duration": 445,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Dark 3",
+      "releaseYear": 2020,
+      "duration": 480,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Young Sheldon",
+      "releaseYear": 2017,
+      "duration": 420,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Young Sheldon 2",
+      "releaseYear": 2018,
+      "duration": 360,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Money Heist",
+      "releaseYear": 2017,
+      "duration": 610,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Money Heist 2",
+      "releaseYear": 2018,
+      "duration": 400,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Money Heist 3",
+      "releaseYear": 2019,
+      "duration": 380,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Money Heist 4",
+      "releaseYear": 2020,
+      "duration": 390,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Money Heist 5",
+      "releaseYear": 2021,
+      "duration": 540,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "In Your Dreams",
+      "releaseYear": 2018,
+      "duration": 590,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "In Your Dreams 2",
+      "releaseYear": 2018,
+      "duration": 590,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Mirzapur",
+      "releaseYear": 2018,
+      "duration": 420,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Mirzapur 2",
+      "releaseYear": 2020,
+      "duration": 525,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Mirzapur 3",
+      "releaseYear": 2024,
+      "duration": 520,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Booo: Sabki Phategi",
+      "releaseYear": 2019,
+      "duration": 160,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Kota Factory",
+      "releaseYear": 2019,
+      "duration": 195,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Kota Factory 2",
+      "releaseYear": 2021,
+      "duration": 215,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Kota Factory 3",
+      "releaseYear": 2024,
+      "duration": 270,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Hostel Daze",
+      "releaseYear": 2019,
+      "duration": 160,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Hostel Daze 2",
+      "releaseYear": 2021,
+      "duration": 120,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Hostel Daze 3",
+      "releaseYear": 2022,
+      "duration": 180,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Hostel Daze 4",
+      "releaseYear": 2023,
+      "duration": 180,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Panchayat",
+      "releaseYear": 2020,
+      "duration": 250,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Aashram",
+      "releaseYear": 2020,
+      "duration": 420,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Aashram 2",
+      "releaseYear": 2020,
+      "duration": 400,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Aashram 3",
+      "releaseYear": 2022,
+      "duration": 450,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Squid Game",
+      "releaseYear": 2021,
+      "duration": 485,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Squid Game 2",
+      "releaseYear": 2024,
+      "duration": 350,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Squid Game 3",
+      "releaseYear": 2025,
+      "duration": 368,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Aspirants",
+      "releaseYear": 2021,
+      "duration": 240,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Aspirants 2",
+      "releaseYear": 2023,
+      "duration": 250,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Wednesday",
+      "releaseYear": 2022,
+      "duration": 400,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Wednesday 2",
+      "releaseYear": 2025,
+      "duration": 460,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Farzi",
+      "releaseYear": 2023,
+      "duration": 450,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "School Friends",
+      "releaseYear": 2023,
+      "duration": 475,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "School Friends 2",
+      "releaseYear": 2024,
+      "duration": 500,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "School Friends 3",
+      "releaseYear": 2025,
+      "duration": 450,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Heeramandi: The Diamond Bazaar",
+      "releaseYear": 2024,
+      "duration": 450,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Thukra ke Mera Pyar",
+      "releaseYear": 2024,
+      "duration": 440,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "IT: Welcome to Derry",
+      "releaseYear": 2025,
+      "duration": 470,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    },
+    {
+      "name": "Adolescence",
+      "releaseYear": 2025,
+      "duration": 220,
+      "type": "TV Show",
+      "group": "Series/Shows"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g_1777831777430",
+      "name": "Indian",
+      "color": "#f472b6",
+      "memberKeys": [
+        {
+          "name": "Lagaan",
+          "releaseYear": 2001,
+          "duration": 220,
+          "type": "Movie"
+        },
+        {
+          "name": "Koi... Mil Gaya",
+          "releaseYear": 2003,
+          "duration": 170,
+          "type": "Movie"
+        },
+        {
+          "name": "Paatshaala",
+          "releaseYear": 2010,
+          "duration": 122,
+          "type": "Movie"
+        },
+        {
+          "name": "Zindagi Na Milegi Dobara",
+          "releaseYear": 2011,
+          "duration": 155,
+          "type": "Movie"
+        },
+        {
+          "name": "Patiala House",
+          "releaseYear": 2011,
+          "duration": 140,
+          "type": "Movie"
+        },
+        {
+          "name": "Life of Pi",
+          "releaseYear": 2012,
+          "duration": 127,
+          "type": "Movie"
+        },
+        {
+          "name": "Joker (Akshay Kumar)",
+          "releaseYear": 2012,
+          "duration": 100,
+          "type": "Movie"
+        },
+        {
+          "name": "Barfi!",
+          "releaseYear": 2012,
+          "duration": 150,
+          "type": "Movie"
+        },
+        {
+          "name": "Grand Masti",
+          "releaseYear": 2013,
+          "duration": 137,
+          "type": "Movie"
+        },
+        {
+          "name": "Humshakals",
+          "releaseYear": 2014,
+          "duration": 158,
+          "type": "Movie"
+        },
+        {
+          "name": "PK",
+          "releaseYear": 2014,
+          "duration": 150,
+          "type": "Movie"
+        },
+        {
+          "name": "Welcome to Karachi",
+          "releaseYear": 2015,
+          "duration": 110,
+          "type": "Movie"
+        },
+        {
+          "name": "Bajrangi Bhaijaan",
+          "releaseYear": 2015,
+          "duration": 150,
+          "type": "Movie"
+        },
+        {
+          "name": "The Boy",
+          "releaseYear": 2016,
+          "duration": 97,
+          "type": "Movie"
+        },
+        {
+          "name": "Behen Hogi Teri",
+          "releaseYear": 2017,
+          "duration": 128,
+          "type": "Movie"
+        },
+        {
+          "name": "Raees",
+          "releaseYear": 2017,
+          "duration": 143,
+          "type": "Movie"
+        },
+        {
+          "name": "Fryday",
+          "releaseYear": 2018,
+          "duration": 114,
+          "type": "Movie"
+        },
+        {
+          "name": "Hichki",
+          "releaseYear": 2018,
+          "duration": 116,
+          "type": "Movie"
+        },
+        {
+          "name": "Super 30",
+          "releaseYear": 2019,
+          "duration": 155,
+          "type": "Movie"
+        },
+        {
+          "name": "Pushpa: The Rise",
+          "releaseYear": 2021,
+          "duration": 179,
+          "type": "Movie"
+        },
+        {
+          "name": "The Kerala Story",
+          "releaseYear": 2023,
+          "duration": 138,
+          "type": "Movie"
+        },
+        {
+          "name": "Dunki",
+          "releaseYear": 2023,
+          "duration": 161,
+          "type": "Movie"
+        },
+        {
+          "name": "OMG 2",
+          "releaseYear": 2023,
+          "duration": 150,
+          "type": "Movie"
+        },
+        {
+          "name": "Khel Khel Mein",
+          "releaseYear": 2024,
+          "duration": 131,
+          "type": "Movie"
+        },
+        {
+          "name": "Maharaja",
+          "releaseYear": 2024,
+          "duration": 140,
+          "type": "Movie"
+        },
+        {
+          "name": "Harom Hara",
+          "releaseYear": 2024,
+          "duration": 154,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777833443034",
+      "name": "Pakistani Dramas",
+      "color": "#e879f9",
+      "memberKeys": [
+        {
+          "name": "Khuda Aur Muhabbat",
+          "releaseYear": 2011,
+          "duration": 560,
+          "type": "TV Show"
+        },
+        {
+          "name": "Khuda Aur Muhabbat 2",
+          "releaseYear": 2016,
+          "duration": 920,
+          "type": "TV Show"
+        },
+        {
+          "name": "Khuda Aur Muhabbat 3",
+          "releaseYear": 2021,
+          "duration": 1560,
+          "type": "TV Show"
+        },
+        {
+          "name": "Shehr-e-Zaat",
+          "releaseYear": 2012,
+          "duration": 855,
+          "type": "TV Show"
+        },
+        {
+          "name": "Pyare Afzal",
+          "releaseYear": 2013,
+          "duration": 1480,
+          "type": "TV Show"
+        },
+        {
+          "name": "Alif Allah aur Insaan",
+          "releaseYear": 2018,
+          "duration": 1634,
+          "type": "TV Show"
+        },
+        {
+          "name": "Suno Chanda",
+          "releaseYear": 2018,
+          "duration": 1200,
+          "type": "TV Show"
+        },
+        {
+          "name": "Zan Mureed",
+          "releaseYear": 2018,
+          "duration": 1064,
+          "type": "TV Show"
+        },
+        {
+          "name": "Khaani",
+          "releaseYear": 2018,
+          "duration": 1178,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aik Mohabbat Kaafi Hai",
+          "releaseYear": 2018,
+          "duration": 1080,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aatish",
+          "releaseYear": 2018,
+          "duration": 1120,
+          "type": "TV Show"
+        },
+        {
+          "name": "Ranjha Ranjha Kardi",
+          "releaseYear": 2018,
+          "duration": 1240,
+          "type": "TV Show"
+        },
+        {
+          "name": "Be Dardi",
+          "releaseYear": 2018,
+          "duration": 1160,
+          "type": "TV Show"
+        },
+        {
+          "name": "Uraan",
+          "releaseYear": 2019,
+          "duration": 1872,
+          "type": "TV Show"
+        },
+        {
+          "name": "Mere Paas Tum Ho",
+          "releaseYear": 2019,
+          "duration": 920,
+          "type": "TV Show"
+        },
+        {
+          "name": "Anaa",
+          "releaseYear": 2019,
+          "duration": 1200,
+          "type": "TV Show"
+        },
+        {
+          "name": "Deewangi",
+          "releaseYear": 2020,
+          "duration": 1558,
+          "type": "TV Show"
+        },
+        {
+          "name": "Alif",
+          "releaseYear": 2020,
+          "duration": 1008,
+          "type": "TV Show"
+        },
+        {
+          "name": "Jo Tu Chahe",
+          "releaseYear": 2020,
+          "duration": 1634,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kahin Deep Jallay",
+          "releaseYear": 2020,
+          "duration": 1292,
+          "type": "TV Show"
+        },
+        {
+          "name": "Mohabbat Tujhe Alvida",
+          "releaseYear": 2020,
+          "duration": 1120,
+          "type": "TV Show"
+        },
+        {
+          "name": "Raaz-e-Ulfat",
+          "releaseYear": 2020,
+          "duration": 1520,
+          "type": "TV Show"
+        },
+        {
+          "name": "Ehd-e-Wafa",
+          "releaseYear": 2020,
+          "duration": 1000,
+          "type": "TV Show"
+        },
+        {
+          "name": "Thora sa Haq",
+          "releaseYear": 2020,
+          "duration": 1400,
+          "type": "TV Show"
+        },
+        {
+          "name": "Parizaad",
+          "releaseYear": 2021,
+          "duration": 1160,
+          "type": "TV Show"
+        },
+        {
+          "name": "Laapata",
+          "releaseYear": 2021,
+          "duration": 880,
+          "type": "TV Show"
+        },
+        {
+          "name": "Hum Kahan Ke Sachay Thay",
+          "releaseYear": 2021,
+          "duration": 880,
+          "type": "TV Show"
+        },
+        {
+          "name": "Chupke Chupke",
+          "releaseYear": 2021,
+          "duration": 1200,
+          "type": "TV Show"
+        },
+        {
+          "name": "Raqs-e-Bismil",
+          "releaseYear": 2021,
+          "duration": 1120,
+          "type": "TV Show"
+        },
+        {
+          "name": "Hum Tum",
+          "releaseYear": 2022,
+          "duration": 1240,
+          "type": "TV Show"
+        },
+        {
+          "name": "Introverts",
+          "releaseYear": 2023,
+          "duration": 120,
+          "type": "TV Show"
+        },
+        {
+          "name": "Wadera in Love",
+          "releaseYear": 2023,
+          "duration": 52,
+          "type": "TV Show"
+        },
+        {
+          "name": "22 Qadam",
+          "releaseYear": 2023,
+          "duration": 1150,
+          "type": "TV Show"
+        },
+        {
+          "name": "Idiot",
+          "releaseYear": 2023,
+          "duration": 860,
+          "type": "TV Show"
+        },
+        {
+          "name": "Akhara",
+          "releaseYear": 2024,
+          "duration": 1280,
+          "type": "TV Show"
+        },
+        {
+          "name": "Khaie",
+          "releaseYear": 2024,
+          "duration": 1040,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kabhi Main Kabhi Tum",
+          "releaseYear": 2024,
+          "duration": 1330,
+          "type": "TV Show"
+        }
+      ]
+    },
+    {
+      "id": "g_1777831663309",
+      "name": "Harry Potter",
+      "color": "#60a5fa",
+      "memberKeys": [
+        {
+          "name": "Harry Potter and the Sorcerer's Stone",
+          "releaseYear": 2001,
+          "duration": 152,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Chamber of Secrets",
+          "releaseYear": 2002,
+          "duration": 161,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Prisoner of Azkaban",
+          "releaseYear": 2004,
+          "duration": 142,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Goblet of Fire",
+          "releaseYear": 2005,
+          "duration": 157,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Order of the Phoenix",
+          "releaseYear": 2007,
+          "duration": 138,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Half-Blood Prince",
+          "releaseYear": 2009,
+          "duration": 153,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Deathly Hallows pt. 1",
+          "releaseYear": 2010,
+          "duration": 146,
+          "type": "Movie"
+        },
+        {
+          "name": "Harry Potter and the Deathly Hallows pt. 2",
+          "releaseYear": 2011,
+          "duration": 138,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777832094817",
+      "name": "Christopher Nolan",
+      "color": "#a78bfa",
+      "memberKeys": [
+        {
+          "name": "Batman Begins",
+          "releaseYear": 2005,
+          "duration": 155,
+          "type": "Movie"
+        },
+        {
+          "name": "The Dark Knight",
+          "releaseYear": 2008,
+          "duration": 140,
+          "type": "Movie"
+        },
+        {
+          "name": "Inception",
+          "releaseYear": 2010,
+          "duration": 148,
+          "type": "Movie"
+        },
+        {
+          "name": "Intersteller",
+          "releaseYear": 2014,
+          "duration": 169,
+          "type": "Movie"
+        },
+        {
+          "name": "Oppenheimer",
+          "releaseYear": 2023,
+          "duration": 180,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777831225024",
+      "name": "Movies",
+      "color": "#ffd700",
+      "memberKeys": [
+        {
+          "name": "Baby's Day Out",
+          "releaseYear": 1994,
+          "duration": 99,
+          "type": "Movie"
+        },
+        {
+          "name": "The Shawshank Redemption",
+          "releaseYear": 1994,
+          "duration": 142,
+          "type": "Movie"
+        },
+        {
+          "name": "Rush Hour",
+          "releaseYear": 1998,
+          "duration": 97,
+          "type": "Movie"
+        },
+        {
+          "name": "Rush Hour 2",
+          "releaseYear": 2001,
+          "duration": 90,
+          "type": "Movie"
+        },
+        {
+          "name": "Rush Hour 3",
+          "releaseYear": 2007,
+          "duration": 90,
+          "type": "Movie"
+        },
+        {
+          "name": "PotC: The Curse of the Black Pearl",
+          "releaseYear": 2003,
+          "duration": 143,
+          "type": "Movie"
+        },
+        {
+          "name": "Shutter Island",
+          "releaseYear": 2010,
+          "duration": 138,
+          "type": "Movie"
+        },
+        {
+          "name": "The Karate Kid",
+          "releaseYear": 2010,
+          "duration": 135,
+          "type": "Movie"
+        },
+        {
+          "name": "Super 8",
+          "releaseYear": 2011,
+          "duration": 112,
+          "type": "Movie"
+        },
+        {
+          "name": "John Wick",
+          "releaseYear": 2014,
+          "duration": 101,
+          "type": "Movie"
+        },
+        {
+          "name": "IT Chapter One",
+          "releaseYear": 2017,
+          "duration": 135,
+          "type": "Movie"
+        },
+        {
+          "name": "IT Chapter Two",
+          "releaseYear": 2019,
+          "duration": 169,
+          "type": "Movie"
+        },
+        {
+          "name": "Enola Holmes",
+          "releaseYear": 2020,
+          "duration": 123,
+          "type": "Movie"
+        },
+        {
+          "name": "Enola Holmes 2",
+          "releaseYear": 2022,
+          "duration": 129,
+          "type": "Movie"
+        },
+        {
+          "name": "Small Things Like These",
+          "releaseYear": 2024,
+          "duration": 98,
+          "type": "Movie"
+        },
+        {
+          "name": "Frankenstein",
+          "releaseYear": 2025,
+          "duration": 150,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777831243983",
+      "name": "Animated Movies",
+      "color": "#ff6b6b",
+      "memberKeys": [
+        {
+          "name": "The Lion King",
+          "releaseYear": 1994,
+          "duration": 88,
+          "type": "Movie"
+        },
+        {
+          "name": "Mufasa: The Lion King",
+          "releaseYear": 2024,
+          "duration": 118,
+          "type": "Movie"
+        },
+        {
+          "name": "Chicken Run",
+          "releaseYear": 2000,
+          "duration": 84,
+          "type": "Movie"
+        },
+        {
+          "name": "Shrek",
+          "releaseYear": 2001,
+          "duration": 90,
+          "type": "Movie"
+        },
+        {
+          "name": "Shrek 2",
+          "releaseYear": 2004,
+          "duration": 93,
+          "type": "Movie"
+        },
+        {
+          "name": "Shrek the Third",
+          "releaseYear": 2007,
+          "duration": 93,
+          "type": "Movie"
+        },
+        {
+          "name": "Shrek Forever After",
+          "releaseYear": 2010,
+          "duration": 93,
+          "type": "Movie"
+        },
+        {
+          "name": "Monsters, Inc",
+          "releaseYear": 2001,
+          "duration": 92,
+          "type": "Movie"
+        },
+        {
+          "name": "Spirited Away",
+          "releaseYear": 2001,
+          "duration": 125,
+          "type": "Movie"
+        },
+        {
+          "name": "The Incredibles",
+          "releaseYear": 2004,
+          "duration": 115,
+          "type": "Movie"
+        },
+        {
+          "name": "The Incredibles 2",
+          "releaseYear": 2018,
+          "duration": 118,
+          "type": "Movie"
+        },
+        {
+          "name": "Kung Fu Panda",
+          "releaseYear": 2008,
+          "duration": 92,
+          "type": "Movie"
+        },
+        {
+          "name": "Kung Fu Panda 2",
+          "releaseYear": 2011,
+          "duration": 90,
+          "type": "Movie"
+        },
+        {
+          "name": "How to Train Your Dragon",
+          "releaseYear": 2010,
+          "duration": 98,
+          "type": "Movie"
+        },
+        {
+          "name": "How to Train Your Dragon 2",
+          "releaseYear": 2014,
+          "duration": 102,
+          "type": "Movie"
+        },
+        {
+          "name": "How to Train Your Dragon: The Hidden World",
+          "releaseYear": 2019,
+          "duration": 104,
+          "type": "Movie"
+        },
+        {
+          "name": "Despicable Me",
+          "releaseYear": 2010,
+          "duration": 95,
+          "type": "Movie"
+        },
+        {
+          "name": "Despicable Me 2",
+          "releaseYear": 2013,
+          "duration": 90,
+          "type": "Movie"
+        },
+        {
+          "name": "Despicable Me 3",
+          "releaseYear": 2017,
+          "duration": 80,
+          "type": "Movie"
+        },
+        {
+          "name": "Despicable Me 4",
+          "releaseYear": 2024,
+          "duration": 85,
+          "type": "Movie"
+        },
+        {
+          "name": "Minions",
+          "releaseYear": 2015,
+          "duration": 91,
+          "type": "Movie"
+        },
+        {
+          "name": "Tangled",
+          "releaseYear": 2010,
+          "duration": 100,
+          "type": "Movie"
+        },
+        {
+          "name": "Puss in Boots",
+          "releaseYear": 2011,
+          "duration": 90,
+          "type": "Movie"
+        },
+        {
+          "name": "Brave",
+          "releaseYear": 2012,
+          "duration": 93,
+          "type": "Movie"
+        },
+        {
+          "name": "Ice Age: Continental Drift",
+          "releaseYear": 2012,
+          "duration": 88,
+          "type": "Movie"
+        },
+        {
+          "name": "Frozen",
+          "releaseYear": 2013,
+          "duration": 102,
+          "type": "Movie"
+        },
+        {
+          "name": "Frozen 2",
+          "releaseYear": 2019,
+          "duration": 103,
+          "type": "Movie"
+        },
+        {
+          "name": "Big Hero 6",
+          "releaseYear": 2014,
+          "duration": 102,
+          "type": "Movie"
+        },
+        {
+          "name": "Moana",
+          "releaseYear": 2016,
+          "duration": 107,
+          "type": "Movie"
+        },
+        {
+          "name": "Moana 2",
+          "releaseYear": 2024,
+          "duration": 100,
+          "type": "Movie"
+        },
+        {
+          "name": "Coco",
+          "releaseYear": 2017,
+          "duration": 105,
+          "type": "Movie"
+        },
+        {
+          "name": "The Boss Baby",
+          "releaseYear": 2017,
+          "duration": 97,
+          "type": "Movie"
+        },
+        {
+          "name": "The Donkey King",
+          "releaseYear": 2018,
+          "duration": 80,
+          "type": "Movie"
+        },
+        {
+          "name": "Alita: Battle Angel",
+          "releaseYear": 2019,
+          "duration": 122,
+          "type": "Movie"
+        },
+        {
+          "name": "The Mitchells vs. the Machines",
+          "releaseYear": 2021,
+          "duration": 113,
+          "type": "Movie"
+        },
+        {
+          "name": "Luca",
+          "releaseYear": 2021,
+          "duration": 95,
+          "type": "Movie"
+        },
+        {
+          "name": "Encanto",
+          "releaseYear": 2021,
+          "duration": 102,
+          "type": "Movie"
+        },
+        {
+          "name": "Raya and the Last Dragon",
+          "releaseYear": 2021,
+          "duration": 107,
+          "type": "Movie"
+        },
+        {
+          "name": "Turning Red",
+          "releaseYear": 2022,
+          "duration": 100,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777831267392",
+      "name": "Semi-animated+Magical Movies",
+      "color": "#4ade80",
+      "memberKeys": [
+        {
+          "name": "Jumanji",
+          "releaseYear": 1995,
+          "duration": 100,
+          "type": "Movie"
+        },
+        {
+          "name": "Jumanji: Welcome to the Jungle",
+          "releaseYear": 2017,
+          "duration": 115,
+          "type": "Movie"
+        },
+        {
+          "name": "Jumanji: The Next Level",
+          "releaseYear": 2019,
+          "duration": 120,
+          "type": "Movie"
+        },
+        {
+          "name": "Narnia: The Lion, the Witch and the Wardrobe",
+          "releaseYear": 2005,
+          "duration": 143,
+          "type": "Movie"
+        },
+        {
+          "name": "Stardust",
+          "releaseYear": 2007,
+          "duration": 128,
+          "type": "Movie"
+        },
+        {
+          "name": "Bridge to Terabithia",
+          "releaseYear": 2007,
+          "duration": 96,
+          "type": "Movie"
+        },
+        {
+          "name": "Alice in Wonderland",
+          "releaseYear": 2010,
+          "duration": 108,
+          "type": "Movie"
+        },
+        {
+          "name": "Snow White and the Huntsman",
+          "releaseYear": 2012,
+          "duration": 127,
+          "type": "Movie"
+        },
+        {
+          "name": "Maleficent",
+          "releaseYear": 2014,
+          "duration": 97,
+          "type": "Movie"
+        },
+        {
+          "name": "Maleficent: Mistress of Evil",
+          "releaseYear": 2019,
+          "duration": 118,
+          "type": "Movie"
+        },
+        {
+          "name": "Paddington",
+          "releaseYear": 2014,
+          "duration": 95,
+          "type": "Movie"
+        },
+        {
+          "name": "Cinderella",
+          "releaseYear": 2015,
+          "duration": 105,
+          "type": "Movie"
+        },
+        {
+          "name": "Beauty and the Beast",
+          "releaseYear": 2017,
+          "duration": 129,
+          "type": "Movie"
+        },
+        {
+          "name": "The Little Mermaid",
+          "releaseYear": 2023,
+          "duration": 135,
+          "type": "Movie"
+        },
+        {
+          "name": "Lilo & Stich",
+          "releaseYear": 2025,
+          "duration": 108,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777831972918",
+      "name": "Marvel",
+      "color": "#fb923c",
+      "memberKeys": [
+        {
+          "name": "Spider-Man",
+          "releaseYear": 2002,
+          "duration": 121,
+          "type": "Movie"
+        },
+        {
+          "name": "Spider-Man 2",
+          "releaseYear": 2004,
+          "duration": 127,
+          "type": "Movie"
+        },
+        {
+          "name": "Spider-Man 3",
+          "releaseYear": 2007,
+          "duration": 139,
+          "type": "Movie"
+        },
+        {
+          "name": "The Amazing Spider-Man",
+          "releaseYear": 2012,
+          "duration": 136,
+          "type": "Movie"
+        },
+        {
+          "name": "The Amazing Spider-Man 2",
+          "releaseYear": 2014,
+          "duration": 142,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777839098646",
+      "name": "MCU Phase 1",
+      "color": "#34d399",
+      "memberKeys": [
+        {
+          "name": "Iron Man",
+          "releaseYear": 2008,
+          "duration": 126,
+          "type": "Movie"
+        },
+        {
+          "name": "The Incredible Hulk",
+          "releaseYear": 2008,
+          "duration": 112,
+          "type": "Movie"
+        },
+        {
+          "name": "Iron Man 2",
+          "releaseYear": 2010,
+          "duration": 124,
+          "type": "Movie"
+        },
+        {
+          "name": "Thor",
+          "releaseYear": 2011,
+          "duration": 115,
+          "type": "Movie"
+        },
+        {
+          "name": "Captain America: The First Avenger",
+          "releaseYear": 2011,
+          "duration": 124,
+          "type": "Movie"
+        },
+        {
+          "name": "The Avengers",
+          "releaseYear": 2012,
+          "duration": 143,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777839365531",
+      "name": "MCU Phase 2",
+      "color": "#34d399",
+      "memberKeys": [
+        {
+          "name": "Iron Man 3",
+          "releaseYear": 2013,
+          "duration": 130,
+          "type": "Movie"
+        },
+        {
+          "name": "Thor: The Dark World",
+          "releaseYear": 2013,
+          "duration": 112,
+          "type": "Movie"
+        },
+        {
+          "name": "Captain America: The Winter Soldier",
+          "releaseYear": 2014,
+          "duration": 136,
+          "type": "Movie"
+        },
+        {
+          "name": "The Guardians of the Galaxy",
+          "releaseYear": 2014,
+          "duration": 122,
+          "type": "Movie"
+        },
+        {
+          "name": "Avengers: Age of Ultron",
+          "releaseYear": 2015,
+          "duration": 141,
+          "type": "Movie"
+        },
+        {
+          "name": "Ant-Man",
+          "releaseYear": 2015,
+          "duration": 117,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777839375135",
+      "name": "MCU Phase 3",
+      "color": "#34d399",
+      "memberKeys": [
+        {
+          "name": "Captain America: Civil War",
+          "releaseYear": 2016,
+          "duration": 147,
+          "type": "Movie"
+        },
+        {
+          "name": "Doctor Strange",
+          "releaseYear": 2016,
+          "duration": 115,
+          "type": "Movie"
+        },
+        {
+          "name": "The Guardians of the Galaxy 2",
+          "releaseYear": 2017,
+          "duration": 136,
+          "type": "Movie"
+        },
+        {
+          "name": "Spider-Man: Homecoming",
+          "releaseYear": 2017,
+          "duration": 133,
+          "type": "Movie"
+        },
+        {
+          "name": "Thor: Ragnarok",
+          "releaseYear": 2017,
+          "duration": 130,
+          "type": "Movie"
+        },
+        {
+          "name": "Black Panther",
+          "releaseYear": 2018,
+          "duration": 134,
+          "type": "Movie"
+        },
+        {
+          "name": "Avengers: Infinity War",
+          "releaseYear": 2018,
+          "duration": 149,
+          "type": "Movie"
+        },
+        {
+          "name": "Ant-Man and the Wasp",
+          "releaseYear": 2018,
+          "duration": 118,
+          "type": "Movie"
+        },
+        {
+          "name": "Captain Marvel",
+          "releaseYear": 2019,
+          "duration": 124,
+          "type": "Movie"
+        },
+        {
+          "name": "Avengers: Endgame",
+          "releaseYear": 2019,
+          "duration": 181,
+          "type": "Movie"
+        },
+        {
+          "name": "Spider-Man: Far From Home",
+          "releaseYear": 2019,
+          "duration": 129,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777839381834",
+      "name": "MCU Phase 4",
+      "color": "#34d399",
+      "memberKeys": [
+        {
+          "name": "Black Widow",
+          "releaseYear": 2021,
+          "duration": 134,
+          "type": "Movie"
+        },
+        {
+          "name": "Shang-Chi and the Legends of Ten Rings",
+          "releaseYear": 2021,
+          "duration": 132,
+          "type": "Movie"
+        },
+        {
+          "name": "Eternals",
+          "releaseYear": 2021,
+          "duration": 156,
+          "type": "Movie"
+        },
+        {
+          "name": "Spider-Man: No Way Home",
+          "releaseYear": 2021,
+          "duration": 148,
+          "type": "Movie"
+        },
+        {
+          "name": "Doctor Strange in the Multiverse of Madness",
+          "releaseYear": 2022,
+          "duration": 126,
+          "type": "Movie"
+        },
+        {
+          "name": "Thor: Love and Thunder",
+          "releaseYear": 2022,
+          "duration": 118,
+          "type": "Movie"
+        },
+        {
+          "name": "Black Panther: Wakanda Forever",
+          "releaseYear": 2022,
+          "duration": 161,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777839407888",
+      "name": "MCU Phase 5",
+      "color": "#34d399",
+      "memberKeys": [
+        {
+          "name": "Ant-Man and the Wasp: Quantumania",
+          "releaseYear": 2023,
+          "duration": 124,
+          "type": "Movie"
+        },
+        {
+          "name": "The Guardians of the Galaxy 3",
+          "releaseYear": 2023,
+          "duration": 150,
+          "type": "Movie"
+        },
+        {
+          "name": "The Marvels",
+          "releaseYear": 2023,
+          "duration": 105,
+          "type": "Movie"
+        },
+        {
+          "name": "Deadpool & Wolverine",
+          "releaseYear": 2024,
+          "duration": 128,
+          "type": "Movie"
+        },
+        {
+          "name": "Captain America: Brave New World",
+          "releaseYear": 2025,
+          "duration": 118,
+          "type": "Movie"
+        },
+        {
+          "name": "Thunderbolts*",
+          "releaseYear": 2025,
+          "duration": 126,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777839439282",
+      "name": "MCU Phase 6",
+      "color": "#34d399",
+      "memberKeys": [
+        {
+          "name": "The Fantastic Four: First Steps",
+          "releaseYear": 2025,
+          "duration": 115,
+          "type": "Movie"
+        }
+      ]
+    },
+    {
+      "id": "g_1777832542174",
+      "name": "Series/Shows",
+      "color": "#38bdf8",
+      "memberKeys": [
+        {
+          "name": "Drake & Josh",
+          "releaseYear": 2004,
+          "duration": 144,
+          "type": "TV Show"
+        },
+        {
+          "name": "Drake & Josh 2",
+          "releaseYear": 2004,
+          "duration": 322,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly",
+          "releaseYear": 2007,
+          "duration": 588,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly 2",
+          "releaseYear": 2008,
+          "duration": 588,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly 3",
+          "releaseYear": 2009,
+          "duration": 460,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly 4",
+          "releaseYear": 2010,
+          "duration": 299,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly 5",
+          "releaseYear": 2011,
+          "duration": 253,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly 6",
+          "releaseYear": 2012,
+          "duration": 345,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly Reboot",
+          "releaseYear": 2021,
+          "duration": 299,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly Reboot 2",
+          "releaseYear": 2022,
+          "duration": 230,
+          "type": "TV Show"
+        },
+        {
+          "name": "iCarly Reboot 3",
+          "releaseYear": 2023,
+          "duration": 220,
+          "type": "TV Show"
+        },
+        {
+          "name": "Victorious",
+          "releaseYear": 2010,
+          "duration": 400,
+          "type": "TV Show"
+        },
+        {
+          "name": "Victorious 2",
+          "releaseYear": 2011,
+          "duration": 260,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones",
+          "releaseYear": 2011,
+          "duration": 567,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 2",
+          "releaseYear": 2012,
+          "duration": 549,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 3",
+          "releaseYear": 2013,
+          "duration": 558,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 4",
+          "releaseYear": 2014,
+          "duration": 545,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 5",
+          "releaseYear": 2015,
+          "duration": 563,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 6",
+          "releaseYear": 2016,
+          "duration": 560,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 7",
+          "releaseYear": 2017,
+          "duration": 440,
+          "type": "TV Show"
+        },
+        {
+          "name": "Game Of Thrones 8",
+          "releaseYear": 2019,
+          "duration": 440,
+          "type": "TV Show"
+        },
+        {
+          "name": "Attack on Titan",
+          "releaseYear": 2013,
+          "duration": 600,
+          "type": "TV Show"
+        },
+        {
+          "name": "Attack on Titan 2",
+          "releaseYear": 2017,
+          "duration": 280,
+          "type": "TV Show"
+        },
+        {
+          "name": "Attack on Titan 3",
+          "releaseYear": 2019,
+          "duration": 520,
+          "type": "TV Show"
+        },
+        {
+          "name": "Attack on Titan 4",
+          "releaseYear": 2023,
+          "duration": 810,
+          "type": "TV Show"
+        },
+        {
+          "name": "Peaky Blinders",
+          "releaseYear": 2013,
+          "duration": 330,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dirilis: Ertugrul",
+          "releaseYear": 2015,
+          "duration": 3380,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dirilis: Ertugrul 2",
+          "releaseYear": 2016,
+          "duration": 4550,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dirilis: Ertugrul 3",
+          "releaseYear": 2017,
+          "duration": 3900,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dirilis: Ertugrul 4",
+          "releaseYear": 2018,
+          "duration": 3900,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dirilis: Ertugrul 5",
+          "releaseYear": 2019,
+          "duration": 3770,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kurulus: Osman",
+          "releaseYear": 2020,
+          "duration": 3510,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kurulus: Osman 2",
+          "releaseYear": 2021,
+          "duration": 5180,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kurulus: Osman 3",
+          "releaseYear": 2022,
+          "duration": 4810,
+          "type": "TV Show"
+        },
+        {
+          "name": "Younus Emre: Askin Yolculugu",
+          "releaseYear": 2015,
+          "duration": 1540,
+          "type": "TV Show"
+        },
+        {
+          "name": "Nizam-e-Alam",
+          "releaseYear": 2021,
+          "duration": 5100,
+          "type": "TV Show"
+        },
+        {
+          "name": "Mendirman Jaloliddin",
+          "releaseYear": 2021,
+          "duration": 910,
+          "type": "TV Show"
+        },
+        {
+          "name": "Stranger Things",
+          "releaseYear": 2016,
+          "duration": 406,
+          "type": "TV Show"
+        },
+        {
+          "name": "Stranger Things 2",
+          "releaseYear": 2017,
+          "duration": 465,
+          "type": "TV Show"
+        },
+        {
+          "name": "Stranger Things 3",
+          "releaseYear": 2019,
+          "duration": 445,
+          "type": "TV Show"
+        },
+        {
+          "name": "Stranger Things 4",
+          "releaseYear": 2022,
+          "duration": 770,
+          "type": "TV Show"
+        },
+        {
+          "name": "Stranger Things 5",
+          "releaseYear": 2025,
+          "duration": 610,
+          "type": "TV Show"
+        },
+        {
+          "name": "Stranger Things: Tales from '85",
+          "releaseYear": 2026,
+          "duration": 239,
+          "type": "TV Show"
+        },
+        {
+          "name": "Ren: The Girl with the Mark",
+          "releaseYear": 2016,
+          "duration": 50,
+          "type": "TV Show"
+        },
+        {
+          "name": "Ren: The Girl with the Mark 2",
+          "releaseYear": 2024,
+          "duration": 60,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dark",
+          "releaseYear": 2017,
+          "duration": 490,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dark 2",
+          "releaseYear": 2019,
+          "duration": 445,
+          "type": "TV Show"
+        },
+        {
+          "name": "Dark 3",
+          "releaseYear": 2020,
+          "duration": 480,
+          "type": "TV Show"
+        },
+        {
+          "name": "Young Sheldon",
+          "releaseYear": 2017,
+          "duration": 420,
+          "type": "TV Show"
+        },
+        {
+          "name": "Young Sheldon 2",
+          "releaseYear": 2018,
+          "duration": 360,
+          "type": "TV Show"
+        },
+        {
+          "name": "Money Heist",
+          "releaseYear": 2017,
+          "duration": 610,
+          "type": "TV Show"
+        },
+        {
+          "name": "Money Heist 2",
+          "releaseYear": 2018,
+          "duration": 400,
+          "type": "TV Show"
+        },
+        {
+          "name": "Money Heist 3",
+          "releaseYear": 2019,
+          "duration": 380,
+          "type": "TV Show"
+        },
+        {
+          "name": "Money Heist 4",
+          "releaseYear": 2020,
+          "duration": 390,
+          "type": "TV Show"
+        },
+        {
+          "name": "Money Heist 5",
+          "releaseYear": 2021,
+          "duration": 540,
+          "type": "TV Show"
+        },
+        {
+          "name": "In Your Dreams",
+          "releaseYear": 2018,
+          "duration": 590,
+          "type": "TV Show"
+        },
+        {
+          "name": "In Your Dreams 2",
+          "releaseYear": 2018,
+          "duration": 590,
+          "type": "TV Show"
+        },
+        {
+          "name": "Mirzapur",
+          "releaseYear": 2018,
+          "duration": 420,
+          "type": "TV Show"
+        },
+        {
+          "name": "Mirzapur 2",
+          "releaseYear": 2020,
+          "duration": 525,
+          "type": "TV Show"
+        },
+        {
+          "name": "Mirzapur 3",
+          "releaseYear": 2024,
+          "duration": 520,
+          "type": "TV Show"
+        },
+        {
+          "name": "Booo: Sabki Phategi",
+          "releaseYear": 2019,
+          "duration": 160,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kota Factory",
+          "releaseYear": 2019,
+          "duration": 195,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kota Factory 2",
+          "releaseYear": 2021,
+          "duration": 215,
+          "type": "TV Show"
+        },
+        {
+          "name": "Kota Factory 3",
+          "releaseYear": 2024,
+          "duration": 270,
+          "type": "TV Show"
+        },
+        {
+          "name": "Hostel Daze",
+          "releaseYear": 2019,
+          "duration": 160,
+          "type": "TV Show"
+        },
+        {
+          "name": "Hostel Daze 2",
+          "releaseYear": 2021,
+          "duration": 120,
+          "type": "TV Show"
+        },
+        {
+          "name": "Hostel Daze 3",
+          "releaseYear": 2022,
+          "duration": 180,
+          "type": "TV Show"
+        },
+        {
+          "name": "Hostel Daze 4",
+          "releaseYear": 2023,
+          "duration": 180,
+          "type": "TV Show"
+        },
+        {
+          "name": "Panchayat",
+          "releaseYear": 2020,
+          "duration": 250,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aashram",
+          "releaseYear": 2020,
+          "duration": 420,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aashram 2",
+          "releaseYear": 2020,
+          "duration": 400,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aashram 3",
+          "releaseYear": 2022,
+          "duration": 450,
+          "type": "TV Show"
+        },
+        {
+          "name": "Squid Game",
+          "releaseYear": 2021,
+          "duration": 485,
+          "type": "TV Show"
+        },
+        {
+          "name": "Squid Game 2",
+          "releaseYear": 2024,
+          "duration": 350,
+          "type": "TV Show"
+        },
+        {
+          "name": "Squid Game 3",
+          "releaseYear": 2025,
+          "duration": 368,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aspirants",
+          "releaseYear": 2021,
+          "duration": 240,
+          "type": "TV Show"
+        },
+        {
+          "name": "Aspirants 2",
+          "releaseYear": 2023,
+          "duration": 250,
+          "type": "TV Show"
+        },
+        {
+          "name": "Wednesday",
+          "releaseYear": 2022,
+          "duration": 400,
+          "type": "TV Show"
+        },
+        {
+          "name": "Wednesday 2",
+          "releaseYear": 2025,
+          "duration": 460,
+          "type": "TV Show"
+        },
+        {
+          "name": "Farzi",
+          "releaseYear": 2023,
+          "duration": 450,
+          "type": "TV Show"
+        },
+        {
+          "name": "School Friends",
+          "releaseYear": 2023,
+          "duration": 475,
+          "type": "TV Show"
+        },
+        {
+          "name": "School Friends 2",
+          "releaseYear": 2024,
+          "duration": 500,
+          "type": "TV Show"
+        },
+        {
+          "name": "School Friends 3",
+          "releaseYear": 2025,
+          "duration": 450,
+          "type": "TV Show"
+        },
+        {
+          "name": "Heeramandi: The Diamond Bazaar",
+          "releaseYear": 2024,
+          "duration": 450,
+          "type": "TV Show"
+        },
+        {
+          "name": "Thukra ke Mera Pyar",
+          "releaseYear": 2024,
+          "duration": 440,
+          "type": "TV Show"
+        },
+        {
+          "name": "IT: Welcome to Derry",
+          "releaseYear": 2025,
+          "duration": 470,
+          "type": "TV Show"
+        },
+        {
+          "name": "Adolescence",
+          "releaseYear": 2025,
+          "duration": 220,
+          "type": "TV Show"
+        }
+      ]
+    }
+  ]
+}

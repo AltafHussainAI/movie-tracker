@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 Dashboard - Movie Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .edit-btn, .delete-btn {
+            background: #252d36;
+            border: 1px solid #333b45;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin: 0 4px;
+        }
+        
+        .edit-btn {
+            color: #ffd700;
+        }
+        
+        .edit-btn:hover {
+            background: #ffd700;
+            color: #0a0c0f;
+        }
+        
+        .delete-btn {
+            color: #ff6b6b;
+        }
+        
+        .delete-btn:hover {
+            background: #ff6b6b;
+            color: #0a0c0f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="title-section">
+                <h1>🎬 <span>Paaji Cinema Verse</span></h1>
+                <p>Dashboard • Quick Overview</p>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link active">🏠 Dashboard</a>
+                <a href="list.html" class="nav-link">📋 All Entries</a>
+                <a href="stats.html" class="nav-link">📊 Statistics</a>
+                <a href="extended-stats.html" class="nav-link">📈 Extended Stats</a>
+                <a href="selective-stats.html" class="nav-link">🎯 Selective Stats</a>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="section-title">
+                <span>➕</span> Add New Entry
+            </div>
+            <div class="form-group">
+                <div class="input-field">
+                    <label><span>🎬</span> Title</label>
+                    <input type="text" id="name" placeholder="e.g., Spider-Man">
+                </div>
+                <div class="input-field">
+                    <label><span>📅</span> Release Year</label>
+                    <input type="number" id="releaseYear" placeholder="2002" min="1900" max="2100">
+                </div>
+                <div class="input-field">
+                    <label><span>⏱️</span> Duration (minutes)</label>
+                    <input type="number" id="duration" placeholder="121" min="1" step="0.1">
+                </div>
+                <div class="input-field">
+                    <label><span>🎭</span> Type</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="type" value="Movie" checked> 🎬 Movie</label>
+                        <label><input type="radio" name="type" value="TV Show"> 📺 TV Show</label>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addEntry()">
+                    <span>➕</span> ADD
+                </button>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🎬</div>
+                <h3>Total Movies</h3>
+                <div class="stat-value" id="totalMovies">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📺</div>
+                <h3>Total Shows</h3>
+                <div class="stat-value" id="totalShows">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <h3>Total Entries</h3>
+                <div class="stat-value" id="totalEntries">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <h3>Avg Movie Duration</h3>
+                <div class="stat-value" id="avgMovieDuration">0h 0m</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⌛</div>
+                <h3>Avg Show Duration</h3>
+                <div class="stat-value" id="avgShowDuration">0h 0m</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <h3>Overall Average</h3>
+                <div class="stat-value" id="avgOverall">0h 0m</div>
+            </div>
+        </div>
+
+        <!-- Recent Entries -->
+        <div class="table-section">
+            <div class="section-title">
+                <span>🆕</span> Recent Entries (Last 5)
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>TITLE</th>
+                            <th>YEAR</th>
+                            <th>DURATION</th>
+                            <th>TYPE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentTableBody">
+                        <tr>
+                            <td colspan="6" class="empty-message">
+                                ✨ Add your first movie or TV show!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <h2>✏️ Edit Entry</h2>
+            <div class="modal-input">
+                <label>Title</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="modal-input">
+                <label>Release Year</label>
+                <input type="number" id="editYear" min="1900" max="2100">
+            </div>
+            <div class="modal-input">
+                <label>Duration (minutes)</label>
+                <input type="number" id="editDuration" min="1" step="0.1">
+            </div>
+            <div class="modal-input">
+                <label>Type</label>
+                <div class="radio-group" style="background: #161a1f; padding: 12px;">
+                    <label><input type="radio" name="editType" value="Movie"> 🎬 Movie</label>
+                    <label><input type="radio" name="editType" value="TV Show"> 📺 TV Show</label>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeEditModal()">Cancel</button>
+                <button class="modal-btn save" onclick="saveEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Indicator -->
+    <div class="save-indicator" id="saveIndicator">
+        <span>💾</span>
+        <span>Saved</span>
+    </div>
+
+    <script src="data-manager.js"></script>
+    <script src="script.js"></script>
+    <script>
+        let currentEditIndex = -1;
+
+        // Override page-specific update
+        function updatePageSpecificContent() {
+            updateStats();
+            updateRecentEntries();
+        }
+
+        // Add new entry
+        function addEntry() {
+            const name = document.getElementById('name').value.trim();
+            const releaseYear = document.getElementById('releaseYear').value;
+            const duration = document.getElementById('duration').value;
+            const type = document.querySelector('input[name="type"]:checked').value;
+
+            if (!name || !releaseYear || !duration) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            const duplicate = movieData.find(item =>
+                item.name.toLowerCase() === name.toLowerCase() && item.type === type
+            );
+
+            if (duplicate) {
+                if (!confirm(`"${duplicate.name}" (${duplicate.type}) already exists in your collection.\n\nAdd it anyway?`)) {
+                    return;
+                }
+            }
+
+            movieData.push({
+                name: name,
+                releaseYear: parseInt(releaseYear),
+                duration: Math.round(parseFloat(duration) * 10) / 10,
+                type: type
+            });
+
+            // Clear form
+            document.getElementById('name').value = '';
+            document.getElementById('releaseYear').value = '';
+            document.getElementById('duration').value = '';
+
+            saveMovieData();
+            updatePageSpecificContent();
+        }
+
+        // Edit functions
+        function openEditModal(index) {
+            currentEditIndex = index;
+            const movie = movieData[index];
+            
+            document.getElementById('editName').value = movie.name;
+            document.getElementById('editYear').value = movie.releaseYear;
+            document.getElementById('editDuration').value = movie.duration;
+            
+            const radios = document.querySelectorAll('input[name="editType"]');
+            radios.forEach(radio => {
+                radio.checked = (radio.value === movie.type);
+            });
+            
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditIndex = -1;
+        }
+
+        function saveEdit() {
+            if (currentEditIndex === -1) return;
+
+            const name = document.getElementById('editName').value.trim();
+            const year = parseInt(document.getElementById('editYear').value);
+            const duration = parseFloat(document.getElementById('editDuration').value);
+            const type = document.querySelector('input[name="editType"]:checked').value;
+
+            if (!name || !year || !duration) {
+                alert('Please fill in all fields!');
+                return;
+            }
+
+            movieData[currentEditIndex] = {
+                name: name,
+                releaseYear: year,
+                duration: Math.round(duration * 10) / 10,
+                type: type
+            };
+
+            saveMovieData();
+            closeEditModal();
+            updatePageSpecificContent();
+            showSaveIndicator('Entry updated', '✏️');
+        }
+
+        // Delete function
+        function deleteEntry(index) {
+            if (confirm('Remove this title?')) {
+                movieData.splice(index, 1);
+                saveMovieData();
+                updatePageSpecificContent();
+                showSaveIndicator('Entry deleted', '🗑️');
+            }
+        }
+
+        // Update statistics
+        function updateStats() {
+            const movies = movieData.filter(item => item.type === 'Movie');
+            const shows = movieData.filter(item => item.type === 'TV Show');
+
+            document.getElementById('totalMovies').textContent = movies.length;
+            document.getElementById('totalShows').textContent = shows.length;
+            document.getElementById('totalEntries').textContent = movieData.length;
+
+            if (movies.length > 0) {
+                const avgMovie = movies.reduce((sum, m) => sum + m.duration, 0) / movies.length;
+                document.getElementById('avgMovieDuration').textContent = formatDuration(avgMovie);
+            } else {
+                document.getElementById('avgMovieDuration').textContent = '0h 0m';
+            }
+
+            if (shows.length > 0) {
+                const avgShow = shows.reduce((sum, s) => sum + s.duration, 0) / shows.length;
+                document.getElementById('avgShowDuration').textContent = formatDuration(avgShow);
+            } else {
+                document.getElementById('avgShowDuration').textContent = '0h 0m';
+            }
+
+            if (movieData.length > 0) {
+                const avgOverall = movieData.reduce((sum, m) => sum + m.duration, 0) / movieData.length;
+                document.getElementById('avgOverall').textContent = formatDuration(avgOverall);
+            } else {
+                document.getElementById('avgOverall').textContent = '0h 0m';
+            }
+        }
+
+        // Update recent entries
+        function updateRecentEntries() {
+            const tbody = document.getElementById('recentTableBody');
+            
+            if (movieData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-message">✨ Add your first movie or TV show!</td></tr>';
+                return;
+            }
+
+            // Get last 5 entries
+            const recent = [...movieData].reverse().slice(0, 5);
+            
+            let html = '';
+            recent.forEach((item, index) => {
+                const originalIndex = movieData.findIndex(m => 
+                    m.name === item.name && 
+                    m.releaseYear === item.releaseYear && 
+                    m.duration === item.duration && 
+                    m.type === item.type
+                );
+                
+                html += `
+                    <tr>
+                        <td style="color: #ffd700;">${index + 1}</td>
+                        <td style="color: #ffffff;">${item.name}</td>
+                        <td><span class="year-badge">${item.releaseYear}</span></td>
+                        <td style="color: #ffd700;">${formatDuration(item.duration)}</td>
+                        <td><span class="type-badge">${item.type}</span></td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditModal(${originalIndex})">
+                                <span>✏️</span> Edit
+                            </button>
+                            <button class="delete-btn" onclick="deleteEntry(${originalIndex})">
+                                <span>🗑️</span> Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+
+        // Close modal on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEditModal();
+            }
+        });
+
+        // Refresh when page becomes visible
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                loadMovieData();
+                updatePageSpecificContent();
+            }
+        });
+    </script>
+</body>
+</html>

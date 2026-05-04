@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📋 All Entries - Movie Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .edit-btn, .delete-btn {
+            background:#252d36; border:1px solid #333b45;
+            padding:6px 10px; border-radius:8px; font-size:0.85em;
+            cursor:pointer; transition:all .3s;
+            display:inline-flex; align-items:center; gap:4px; margin:0 4px;
+        }
+        .edit-btn  { color:#ffd700; } .edit-btn:hover  { background:#ffd700; color:#0a0c0f; }
+        .delete-btn{ color:#ff6b6b; } .delete-btn:hover{ background:#ff6b6b; color:#0a0c0f; }
+
+        @keyframes slideDown { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn     { from{opacity:0} to{opacity:1} }
+
+        /* ── Colour swatch ── */
+        .cswatch {
+            width:22px; height:22px; border-radius:50%;
+            border:2px solid transparent; cursor:pointer;
+            transition:transform .15s,border-color .15s; flex-shrink:0;
+        }
+        .cswatch:hover { transform:scale(1.22); }
+        .cswatch.on    { border-color:#fff; transform:scale(1.22); }
+
+        /* ════════════════════════════════════════════════
+           GROUP CARD SHELL
+        ════════════════════════════════════════════════ */
+        .gc {
+            background:#0f1318; border:1.5px solid #21282f;
+            border-radius:18px; margin-bottom:14px; overflow:hidden;
+            transition:border-color .25s,box-shadow .25s,opacity .2s; cursor:grab;
+        }
+        .gc:active { cursor:grabbing; }
+        .gc.dragging { opacity:0.35; transform:scale(0.98); }
+        .gc.drag-over { border-color:var(--gc); box-shadow:0 0 16px var(--gc)55; }
+        .gc.is-open  { border-color:var(--gc); box-shadow:0 0 0 1px var(--gc)33; }
+        .gc.g-selected { border-color:var(--gc) !important; box-shadow:0 0 0 2px var(--gc)55 !important; }
+
+        /* ── Card header ── */
+        .gc-head {
+            display:flex; align-items:center; gap:10px; padding:13px 20px;
+            background:#141920; cursor:pointer; transition:background .15s; user-select:none;
+        }
+        .gc-head:hover { background:#1a2130; }
+        .gc-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
+        .gc-name {
+            flex:1; color:#e2e8f0; font-weight:700; font-size:0.95em;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        }
+        .gc-pill {
+            font-size:0.7em; font-weight:800; padding:2px 9px; border-radius:20px;
+            border:1px solid; flex-shrink:0; letter-spacing:.3px; white-space:nowrap;
+        }
+        .hbtn {
+            display:inline-flex; align-items:center; gap:5px; padding:5px 12px;
+            border-radius:9px; border:1px solid; font-size:0.75em; font-weight:700;
+            cursor:pointer; transition:all .18s; flex-shrink:0; background:transparent; white-space:nowrap;
+        }
+        .hbtn:hover { opacity:.8; }
+        .group-drag-handle {
+            cursor:grab; color:#3d4a5a; font-size:0.9em; padding:2px 4px;
+            transition:color .15s; flex-shrink:0; user-select:none;
+        }
+        .group-drag-handle:hover { color:#94a3b8; }
+
+        /* ── Card body ── */
+        .gc-body { padding:18px 20px; border-top:1px solid #1c242d; display:none; }
+        .gc-body.open { display:block; }
+
+        /* ════════════════════════════════════════════════
+           MEMBER ROWS
+        ════════════════════════════════════════════════ */
+        .member-list { display:flex; flex-direction:column; gap:5px; position:relative; }
+        .mrow {
+            display:flex; align-items:center; gap:10px; background:#141920;
+            border:1.5px solid #1c242d; border-left:3px solid var(--gc); border-radius:10px;
+            padding:9px 12px; transition:background .15s,border-color .15s,box-shadow .15s,transform .12s;
+            cursor:grab; position:relative;
+        }
+        .mrow:hover { background:#1a2130; border-color:#2a333f; }
+        .mrow:active { cursor:grabbing; }
+        .mrow.drag-over { border-color:var(--gc); box-shadow:0 0 12px var(--gc)44; transform:scale(1.01); }
+        .mrow.dragging  { opacity:0.35; transform:scale(0.97); }
+        .mrow.m-selected { background:#1a2130 !important; border-color:var(--gc) !important; box-shadow:0 0 0 1px var(--gc)44 !important; }
+        .mrow.m-selected .mnum { box-shadow:0 0 6px var(--gc); }
+
+        /* Checkbox column — only shows in selection mode */
+        .mcheck-wrap {
+            flex-shrink:0; width:22px;
+            display:none; align-items:center; justify-content:center;
+        }
+        .sel-mode .mcheck-wrap  { display:flex; }
+        .sel-mode .drag-handle  { display:none !important; }
+        .sel-mode .move-btn     { display:none !important; }
+
+        /* Custom checkbox */
+        .mcheck {
+            width:18px; height:18px; border-radius:5px; border:2px solid #3d4a5a;
+            background:transparent; cursor:pointer; transition:all .15s; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.65em; font-weight:900; color:#0a0c0f;
+        }
+        .mcheck:hover { border-color:var(--gc); }
+        .mcheck.on { border-color:var(--gc); background:var(--gc); }
+
+        /* Edge drop zones */
+        .drop-edge { height:7px; border-radius:4px; transition:all .2s; margin:-1px 0; }
+        .drop-edge.active { background:var(--gc); box-shadow:0 0 8px var(--gc)66; height:11px; margin:0; }
+
+        .mnum {
+            font-size:0.67em; font-weight:900; width:22px; height:22px; min-width:22px;
+            border-radius:6px; display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; color:#0a0c0f; letter-spacing:-.5px; transition:box-shadow .2s;
+        }
+        .mtitle {
+            flex:2; color:#e2e8f0; font-size:0.87em; font-weight:600;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0;
+        }
+        .mmeta-year { color:#94a3b8; font-size:0.76em; font-weight:500; flex-shrink:0; min-width:34px; text-align:center; }
+        .mmeta-dur  { color:#ffd700; font-size:0.76em; font-weight:600; flex-shrink:0; min-width:58px; text-align:center; }
+        .mmeta-type {
+            font-size:0.67em; font-weight:800; padding:2px 8px; border-radius:12px; flex-shrink:0; white-space:nowrap;
+        }
+        .mmeta-type.movie  { background:#ffd70022; color:#ffd700; border:1px solid #ffd70044; }
+        .mmeta-type.tvshow { background:#60a5fa22; color:#60a5fa; border:1px solid #60a5fa44; }
+        .mrm {
+            background:none; border:1px solid transparent; color:#2d3748; cursor:pointer;
+            font-size:0.76em; padding:4px 7px; border-radius:7px; line-height:1; flex-shrink:0;
+            transition:all .15s; white-space:nowrap;
+        }
+        .mrm:hover { color:#ff6b6b; border-color:#ff6b6b44; background:#ff6b6b11; }
+        .move-btn {
+            background:none; border:1px solid transparent; color:#4a5568; cursor:pointer;
+            font-size:0.72em; padding:3px 4px; border-radius:5px; line-height:1; flex-shrink:0; transition:all .15s;
+        }
+        .move-btn:hover { color:#ffd700; border-color:#ffd70044; background:#ffd70011; }
+        .move-btn:disabled { opacity:0.2; cursor:not-allowed; pointer-events:none; }
+        .drag-handle {
+            cursor:grab; color:#3d4a5a; font-size:0.82em; padding:2px;
+            transition:color .15s; flex-shrink:0; user-select:none;
+        }
+        .drag-handle:hover { color:#94a3b8; }
+
+        /* ── Sort dropdown ── */
+        .sort-group-select {
+            background:#0d1117; border:1.5px solid #21282f; border-radius:8px;
+            padding:5px 10px; color:#e2e8f0; font-size:0.74em; font-weight:600;
+            outline:none; cursor:pointer; transition:border-color .2s;
+        }
+        .sort-group-select:focus { border-color:var(--gc); }
+
+        /* ── Member list column header ── */
+        .mlist-header {
+            display:flex; align-items:center; gap:10px; padding:5px 12px; margin-bottom:3px;
+            font-size:0.68em; font-weight:800; color:#3d4a5a; text-transform:uppercase; letter-spacing:.8px;
+        }
+        .mlist-header .mh-chk   { min-width:22px; }
+        .mlist-header .mh-title { flex:2; }
+        .mlist-header .mh-year  { min-width:34px; text-align:center; }
+        .mlist-header .mh-dur   { min-width:58px; text-align:center; }
+        .mlist-header .mh-type  { min-width:55px; }
+        .mlist-header .mh-act   { min-width:40px; }
+
+        /* ════════════════════════════════════════════════
+           BATCH TOOLBARS
+        ════════════════════════════════════════════════ */
+        .batch-toolbar {
+            display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+            padding:9px 14px; background:#080c10; border:1px solid #1c242d;
+            border-radius:11px; margin-bottom:12px; animation:fadeIn .18s ease;
+        }
+        .bt-label { font-size:0.7em; font-weight:900; color:#4a5568; text-transform:uppercase; letter-spacing:.5px; flex-shrink:0; }
+        .bt-count { font-size:0.78em; font-weight:800; flex-shrink:0; padding:2px 8px; border-radius:10px; }
+
+        .bbtn {
+            display:inline-flex; align-items:center; gap:4px; padding:5px 11px;
+            border-radius:8px; border:1px solid; font-size:0.73em; font-weight:700;
+            cursor:pointer; transition:all .18s; flex-shrink:0; background:transparent; white-space:nowrap;
+        }
+        .bbtn:disabled { opacity:0.25; cursor:not-allowed; pointer-events:none; }
+        .bbtn.up      { color:#60a5fa; border-color:#60a5fa44; }
+        .bbtn.up:hover      { background:#60a5fa22; border-color:#60a5fa; }
+        .bbtn.down    { color:#a78bfa; border-color:#a78bfa44; }
+        .bbtn.down:hover    { background:#a78bfa22; border-color:#a78bfa; }
+        .bbtn.top     { color:#34d399; border-color:#34d39944; }
+        .bbtn.top:hover     { background:#34d39922; border-color:#34d399; }
+        .bbtn.bot     { color:#fb923c; border-color:#fb923c44; }
+        .bbtn.bot:hover     { background:#fb923c22; border-color:#fb923c; }
+        .bbtn.del     { color:#ff6b6b; border-color:#ff6b6b44; }
+        .bbtn.del:hover     { background:#ff6b6b22; border-color:#ff6b6b; }
+        .bbtn.selall  { color:#ffd700; border-color:#ffd70044; }
+        .bbtn.selall:hover  { background:#ffd70011; border-color:#ffd700; }
+        .bbtn.desel   { color:#3d4a5a; border-color:#21282f; }
+        .bbtn.desel:hover   { color:#94a3b8; border-color:#3d4a5a; }
+        .bbtn.exit    { color:#3d4a5a; border-color:#21282f; }
+        .bbtn.exit:hover    { color:#94a3b8; border-color:#3d4a5a; }
+
+        /* per-group toggle-select-mode button */
+        .sel-toggle-btn {
+            display:inline-flex; align-items:center; gap:5px; padding:5px 11px;
+            border-radius:8px; border:1px solid #21282f; background:transparent;
+            color:#4a5568; font-size:0.73em; font-weight:700; cursor:pointer;
+            transition:all .18s; flex-shrink:0; white-space:nowrap;
+        }
+        .sel-toggle-btn:hover  { border-color:#60a5fa44; color:#60a5fa; background:#60a5fa11; }
+        .sel-toggle-btn.active { border-color:#60a5fa; color:#60a5fa; background:#60a5fa18; }
+
+        /* group-level batch bar */
+        #groupBatchBar {
+            display:none; align-items:center; gap:8px; flex-wrap:wrap;
+            padding:11px 18px; background:#080c10; border:1.5px solid #1c242d;
+            border-radius:14px; margin-bottom:18px; animation:fadeIn .18s ease;
+        }
+        #groupBatchBar.visible { display:flex; }
+        .gbb-count {
+            font-size:0.8em; font-weight:800; padding:2px 9px; border-radius:10px;
+            background:#ffd70018; color:#ffd700; border:1px solid #ffd70044;
+        }
+
+        /* group checkbox */
+        .g-check-wrap { flex-shrink:0; display:none; align-items:center; }
+        .g-sel-mode .g-check-wrap { display:flex; }
+        .g-check {
+            width:18px; height:18px; border-radius:5px; border:2px solid #3d4a5a;
+            background:transparent; cursor:pointer; transition:all .15s; flex-shrink:0;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.65em; font-weight:900; color:#0a0c0f;
+        }
+        .g-check:hover { border-color:var(--gc,#ffd700); }
+        .g-check.on { border-color:var(--gc,#ffd700); background:var(--gc,#ffd700); }
+
+        /* ── Group select-mode button ── */
+        #groupSelModeBtn {
+            display:inline-flex; align-items:center; gap:5px; padding:7px 14px;
+            border-radius:10px; border:1px solid #21282f; background:transparent;
+            color:#4a5568; font-size:0.82em; font-weight:700; cursor:pointer; transition:all .2s; white-space:nowrap;
+        }
+        #groupSelModeBtn:hover  { border-color:#60a5fa44; color:#60a5fa; background:#60a5fa11; }
+        #groupSelModeBtn.active { border-color:#60a5fa; color:#60a5fa; background:#60a5fa18; }
+
+        /* ── Empty state ── */
+        .gc-empty { display:flex; flex-direction:column; align-items:center; gap:6px; padding:24px; color:#2d3748; font-size:0.85em; text-align:center; }
+        .gc-empty .eico { font-size:2em; opacity:.3; }
+
+        /* ── Picker ── */
+        .picker-wrap { margin-top:18px; background:#080c10; border:1px solid #21282f; border-radius:14px; overflow:hidden; animation:fadeIn .2s ease; }
+        .picker-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:12px 16px; background:#0f1318; border-bottom:1px solid #1c242d; }
+        .picker-list { max-height:300px; overflow-y:auto; }
+        .pi { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid #0d1117; cursor:pointer; transition:background .12s; }
+        .pi:hover:not(.pi-lock) { background:#111820; }
+        .pi.pi-on  { background:#091a12; }
+        .pi.pi-lock { cursor:not-allowed; opacity:.35; }
+        .picheck { width:24px; height:24px; border-radius:7px; border:2px solid #21282f; display:flex; align-items:center; justify-content:center; font-size:0.72em; font-weight:900; flex-shrink:0; transition:all .15s; color:#0a0c0f; }
+        .picheck.on { border-color:var(--gc); background:var(--gc); }
+        .piinfo { flex:1; min-width:0; }
+        .pititle { color:#e2e8f0; font-size:0.9em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .pimeta  { color:#4a5568; font-size:0.74em; margin-top:1px; }
+        .piord   { font-size:0.75em; font-weight:800; flex-shrink:0; }
+        .pf { background:#0d1117; border:1.5px solid #21282f; border-radius:8px; padding:6px 11px; color:#e2e8f0; font-size:0.82em; outline:none; transition:border-color .2s; }
+        .pf:focus { border-color:#ffd700; }
+        .pf::placeholder { color:#3d4a5a; }
+        .picker-all-btn { background:transparent; border:1px solid #21282f; color:#94a3b8; padding:5px 12px; border-radius:7px; font-size:0.75em; font-weight:700; cursor:pointer; transition:all .18s; white-space:nowrap; display:inline-flex; align-items:center; gap:4px; }
+        .picker-all-btn:hover { border-color:#ffd70044; color:#ffd700; background:#ffd70011; }
+        .picker-all-btn.clear:hover { border-color:#ff6b6b44; color:#ff6b6b; background:#ff6b6b11; }
+
+        /* ── Caret ── */
+        .gcaret { color:#2d3748; font-size:0.85em; margin-left:4px; flex-shrink:0; transition:transform .2s; }
+        .gcaret.open { transform:rotate(180deg); color:#94a3b8; }
+
+        /* ══ Group Edit Modal ══ */
+        #groupEditModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); z-index:9999; align-items:center; justify-content:center; }
+        #groupEditModal.open { display:flex; }
+        .gem-box { background:#0f1318; border:1px solid #21282f; border-radius:20px; padding:32px 30px; width:100%; max-width:460px; animation:slideDown .2s ease; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+        .gem-title { font-size:1.1em; font-weight:900; color:#e2e8f0; margin-bottom:24px; display:flex; align-items:center; gap:8px; }
+        .gem-label { font-size:0.75em; font-weight:800; color:#4a5568; text-transform:uppercase; letter-spacing:.8px; margin-bottom:7px; }
+        .gem-input { width:100%; box-sizing:border-box; background:#0a0d12; border:2px solid #21282f; border-radius:11px; padding:11px 15px; color:#fff; font-size:0.95em; font-weight:600; outline:none; transition:border-color .2s; }
+        .gem-input:focus { border-color:var(--gem-c, #ffd700); }
+        .gem-swatches { display:flex; gap:8px; flex-wrap:wrap; padding:4px 0; }
+        .gem-swatch { width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer; transition:transform .15s,border-color .15s; }
+        .gem-swatch:hover { transform:scale(1.2); }
+        .gem-swatch.on { border-color:#fff; transform:scale(1.2); box-shadow:0 0 8px currentColor; }
+        .gem-preview-dot { width:12px; height:12px; border-radius:50%; display:inline-block; margin-right:6px; transition:background .2s; }
+        .gem-actions { display:flex; gap:10px; margin-top:26px; justify-content:flex-end; }
+        .gem-cancel { background:transparent; border:1px solid #21282f; color:#4a5568; padding:9px 20px; border-radius:10px; font-size:0.88em; font-weight:700; cursor:pointer; transition:all .2s; }
+        .gem-cancel:hover { border-color:#3d4a5a; color:#94a3b8; }
+        .gem-save { border:none; padding:10px 26px; border-radius:10px; font-weight:900; font-size:0.9em; cursor:pointer; transition:opacity .2s; }
+        .gem-save:hover { opacity:.82; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <div class="title-section">
+            <h1>🎬 <span>Paaji Cinema Verse</span></h1>
+            <p>Complete Collection • Sort & Filter</p>
+        </div>
+        <div class="nav-menu">
+            <a href="index.html" class="nav-link">🏠 Dashboard</a>
+            <a href="list.html"  class="nav-link active">📋 All Entries</a>
+            <a href="stats.html" class="nav-link">📊 Statistics</a>
+            <a href="extended-stats.html"  class="nav-link">📈 Extended Stats</a>
+            <a href="selective-stats.html" class="nav-link">🎯 Selective Stats</a>
+        </div>
+    </div>
+
+    <div class="filter-controls">
+        <div class="filter-group">
+            <label>🔍 Search:</label>
+            <div style="position:relative;display:flex;align-items:center;">
+                <input type="text" id="searchInput" placeholder="Search by title…" oninput="applyFilters()" style="
+                    background:#161a1f;border:2px solid #333b45;border-radius:10px;
+                    padding:10px 36px 10px 15px;color:#fff;min-width:220px;
+                    font-size:0.95em;transition:border-color .3s;outline:none;"
+                    onfocus="this.style.borderColor='#ffd700'" onblur="this.style.borderColor='#333b45'">
+                <button onclick="clearSearch()" style="position:absolute;right:8px;background:none;border:none;color:#94a3b8;font-size:1em;cursor:pointer;padding:0;">✕</button>
+            </div>
+        </div>
+        <div class="filter-group">
+            <label>📊 Show:</label>
+            <select id="typeFilter" onchange="applyFilters()">
+                <option value="all">All Entries</option>
+                <option value="Movie">Movies Only</option>
+                <option value="TV Show">TV Shows Only</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>🔽 Sort by:</label>
+            <select id="sortBy" onchange="applyFilters()">
+                <option value="recent-desc">Recent First</option>
+                <option value="recent-asc">Oldest First</option>
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="duration-desc">Duration (High-Low)</option>
+                <option value="duration-asc">Duration (Low-High)</option>
+                <option value="year-desc">Release Year (New-Old)</option>
+                <option value="year-asc">Release Year (Old-New)</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="status-text" id="resultCount">Showing all entries</span>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="action-btn" onclick="exportToFile()"><span>📥</span> Download Backup</button>
+        <button class="action-btn" onclick="importFromFile()"><span>📤</span> Restore from File</button>
+        <button class="action-btn" id="grpToggleBtn" onclick="toggleGroupPanel()"><span>🏷️</span> Manage Groups</button>
+        <button class="action-btn" id="tableToggleBtn" onclick="toggleTableVisibility()"><span>📋</span> Show Table</button>
+        <button class="action-btn warning" onclick="clearAllData()"><span>🗑️</span> Clear All</button>
+    </div>
+
+    <!-- ═══════════ GROUPS PANEL ═══════════ -->
+    <div id="groupPanelWrap" style="display:none;overflow:hidden;margin-bottom:30px;animation:slideDown .25s ease;">
+    <div class="input-section" style="margin-bottom:0;position:relative;padding:26px 28px;">
+
+        <button onclick="toggleGroupPanel()" style="position:absolute;top:18px;right:20px;background:none;border:none;color:#3d4a5a;font-size:1.3em;cursor:pointer;padding:4px;">✕</button>
+
+        <div class="section-title" style="margin-bottom:20px;">
+            <span>🏷️</span> Custom Groups
+            <span style="font-size:0.72em;font-weight:400;color:#4a5568;margin-left:10px;">
+                Create groups · assign entries · drag to reorder · reorders JSON automatically
+            </span>
+        </div>
+
+        <!-- Create group -->
+        <div style="background:#0a0d12;border:1px solid #1c242d;border-radius:16px;padding:18px 20px;margin-bottom:20px;">
+            <div style="font-size:0.72em;font-weight:900;color:#3d4a5a;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">➕ New Group</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;">
+                <div style="flex:1;min-width:180px;">
+                    <label style="font-size:0.78em;color:#4a5568;display:block;margin-bottom:6px;">Group Name</label>
+                    <input id="newGroupName" type="text" placeholder="e.g. Harry Potter, Nolan Films…" maxlength="40"
+                        style="width:100%;box-sizing:border-box;background:#0f1318;border:2px solid #21282f;border-radius:10px;padding:9px 14px;color:#fff;font-size:0.93em;outline:none;transition:border-color .2s;"
+                        onfocus="this.style.borderColor='#ffd700'" onblur="this.style.borderColor='#21282f'"
+                        onkeydown="if(event.key==='Enter')createNewGroup()">
+                </div>
+                <div>
+                    <label style="font-size:0.78em;color:#4a5568;display:block;margin-bottom:6px;">Colour</label>
+                    <div id="colorPicker" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:3px 0;"></div>
+                </div>
+                <button onclick="createNewGroup()" style="background:linear-gradient(135deg,#ffd700,#ffaa00);color:#0a0c0f;border:none;padding:10px 22px;border-radius:11px;font-weight:900;cursor:pointer;font-size:0.88em;white-space:nowrap;align-self:flex-end;transition:opacity .2s;" onmouseover="this.style.opacity='.82'" onmouseout="this.style.opacity='1'">
+                    ✨ Create
+                </button>
+            </div>
+            <div id="createGroupError" style="color:#ff6b6b;font-size:0.8em;margin-top:8px;display:none;"></div>
+        </div>
+
+        <!-- Group-level batch bar -->
+        <div id="groupBatchBar">
+            <span class="bt-label" style="color:#4a5568;">Groups:</span>
+            <span class="gbb-count" id="gbbCount">0 selected</span>
+            <button class="bbtn selall" onclick="selectAllGroups()">☑ All</button>
+            <button class="bbtn desel"  onclick="deselectAllGroups()">☐ None</button>
+            <button class="bbtn top"  id="gbbTop"  onclick="batchMoveGroups('top')">⏫ To Top</button>
+            <button class="bbtn up"   id="gbbUp"   onclick="batchMoveGroups('up')">▲ Up</button>
+            <button class="bbtn down" id="gbbDown" onclick="batchMoveGroups('down')">▼ Down</button>
+            <button class="bbtn bot"  id="gbbBot"  onclick="batchMoveGroups('bottom')">⏬ To Bottom</button>
+            <button class="bbtn del"  id="gbbDel"  onclick="batchDeleteGroups()">🗑 Delete</button>
+            <div style="flex:1;"></div>
+            <button class="bbtn exit" onclick="exitGroupSelMode()">✕ Exit Selection</button>
+        </div>
+
+        <!-- Groups list header row -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+            <span style="color:#3d4a5a;font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Your Groups</span>
+            <button id="groupSelModeBtn" onclick="toggleGroupSelMode()">☑ Select Groups</button>
+        </div>
+
+        <div id="groupsList"></div>
+    </div>
+    </div>
+    <!-- ═══════════ END GROUPS PANEL ═══════════ -->
+
+    <!-- Main Table (hidden by default) -->
+    <div class="table-section" id="tableSection" style="display:none;">
+        <div class="section-title"><span>📋</span> Complete Collection</div>
+        <div class="table-container" style="max-height:520px;overflow-y:auto;">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>TITLE</th><th>YEAR</th><th>DURATION</th><th>TYPE</th><th>ACTIONS</th></tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="6" class="empty-message">✨ Your collection is empty</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Entry Modal -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h2>✏️ Edit Entry</h2>
+        <div class="modal-input"><label>Title</label><input type="text" id="editName"></div>
+        <div class="modal-input"><label>Release Year</label><input type="number" id="editYear" min="1900" max="2100"></div>
+        <div class="modal-input"><label>Duration (minutes)</label><input type="number" id="editDuration" min="1" step="0.1"></div>
+        <div class="modal-input">
+            <label>Type</label>
+            <div class="radio-group" style="background:#161a1f;padding:12px;">
+                <label><input type="radio" name="editType" value="Movie"> 🎬 Movie</label>
+                <label><input type="radio" name="editType" value="TV Show"> 📺 TV Show</label>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button class="modal-btn cancel" onclick="closeEditModal()">Cancel</button>
+            <button class="modal-btn save"   onclick="saveEdit()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Group Edit Modal -->
+<div id="groupEditModal">
+    <div class="gem-box">
+        <div class="gem-title">
+            <span class="gem-preview-dot" id="gemDot"></span>Edit Group
+        </div>
+        <div style="margin-bottom:18px;">
+            <div class="gem-label">Group Name</div>
+            <input class="gem-input" id="gemNameInput" type="text" maxlength="40" placeholder="Group name…"
+                onkeydown="if(event.key==='Enter')saveGroupEdit();if(event.key==='Escape')closeGroupEditModal();">
+        </div>
+        <div>
+            <div class="gem-label">Colour</div>
+            <div class="gem-swatches" id="gemSwatches"></div>
+        </div>
+        <div class="gem-actions">
+            <button class="gem-cancel" onclick="closeGroupEditModal()">Cancel</button>
+            <button class="gem-save" id="gemSaveBtn" onclick="saveGroupEdit()">💾 Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="save-indicator" id="saveIndicator"><span>💾</span><span>Saved</span></div>
+
+<script src="data-manager.js"></script>
+<script src="script.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// CONSTANTS & STATE
+// ══════════════════════════════════════════════════════════════════════
+const PALETTE = ['#ffd700','#ff6b6b','#4ade80','#60a5fa','#f472b6','#fb923c','#a78bfa','#34d399','#38bdf8','#e879f9'];
+
+let customGroups   = [];
+let activeGroupId  = null;
+let pickerSelected = [];
+let currentEditIndex = -1;
+let tableVisible   = false;
+
+// Group Edit Modal
+let gemGroupId     = null;
+let gemChosenColor = PALETTE[0];
+let chosenColor    = PALETTE[0]; // for new group creation
+
+// Open/closed body tracking
+const openBodies = new Set();
+
+// Per-group item selection: { [gId]: { mode:bool, selected:Set<ikey> } }
+const groupItemSel = {}; // gId -> { mode, selected }
+
+// Group-level selection
+let groupSelMode    = false;
+const groupSelected = new Set(); // set of group ids
+
+// Drag state
+let draggedGroupEl = null;
+let draggedRow     = null;
+let dragGroupId_   = null;
+
+// ══════════════════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════════════════
+function snap(item){ return {name:item.name,releaseYear:item.releaseYear,duration:item.duration,type:item.type}; }
+function ikey(s){ return `${s.name}||${s.releaseYear}||${s.type}`; }
+function assignedKeys(){ const s=new Set(); customGroups.forEach(g=>g.memberKeys.forEach(k=>s.add(ikey(k)))); return s; }
+function groupOfKey(k){ return customGroups.find(g=>g.memberKeys.some(m=>ikey(m)===k))||null; }
+function groupById(id){ return customGroups.find(g=>g.id===id); }
+function formatDur(min){
+    if(!min&&min!==0) return '—';
+    const h=Math.floor(min/60),m=Math.round(min%60);
+    return h>0?`${h}h ${m}m`:`${m}m`;
+}
+function getGIS(gId){ // get or init groupItemSel entry
+    if(!groupItemSel[gId]) groupItemSel[gId]={mode:false,selected:new Set()};
+    return groupItemSel[gId];
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PERSISTENCE
+// ══════════════════════════════════════════════════════════════════════
+function loadGroups(){
+    try{ customGroups=JSON.parse(localStorage.getItem('movieGroups')||'[]'); }
+    catch{ customGroups=[]; }
+}
+function saveGroups(){
+    localStorage.setItem('movieGroups',JSON.stringify(customGroups));
+    applyGroupOrder();
+    saveMovieData();
+}
+function applyGroupOrder(){
+    const groupedKeys=new Set();
+    const ordered=[];
+    customGroups.forEach(g=>{
+        g.memberKeys.forEach(k=>{
+            const key=ikey(k);
+            if(!groupedKeys.has(key)){
+                groupedKeys.add(key);
+                const real=movieData.find(m=>ikey(m)===key);
+                if(real) ordered.push({item:real,groupName:g.name});
+            }
+        });
+    });
+    const ungrouped=movieData.filter(m=>!groupedKeys.has(ikey(m)));
+    movieData.length=0;
+    ordered.forEach(({item,groupName})=>{ delete item.group; item.group=groupName; movieData.push(item); });
+    ungrouped.forEach(item=>{ delete item.group; movieData.push(item); });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PAGE INIT
+// ══════════════════════════════════════════════════════════════════════
+loadGroups();
+function updatePageSpecificContent(){ applyFilters(); }
+
+// ══════════════════════════════════════════════════════════════════════
+// TABLE TOGGLE
+// ══════════════════════════════════════════════════════════════════════
+function toggleTableVisibility(){
+    tableVisible=!tableVisible;
+    const section=document.getElementById('tableSection');
+    const btn=document.getElementById('tableToggleBtn');
+    if(tableVisible){
+        section.style.display='block'; btn.innerHTML='<span>📋</span> Hide Table';
+        btn.style.borderColor='#ffd700'; btn.style.color='#ffd700'; applyFilters();
+    } else {
+        section.style.display='none'; btn.innerHTML='<span>📋</span> Show Table';
+        btn.style.borderColor=''; btn.style.color='';
+    }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MAIN TABLE
+// ══════════════════════════════════════════════════════════════════════
+function applyFilters(){
+    if(!tableVisible) return;
+    const tf=document.getElementById('typeFilter').value;
+    const sb=document.getElementById('sortBy').value;
+    const q=document.getElementById('searchInput').value.trim().toLowerCase();
+    let f=filterData(tf);
+    if(q) f=f.filter(i=>i.name.toLowerCase().includes(q));
+    renderTable(sortData(f,sb));
+    updateResultCount(f.length);
+}
+function clearSearch(){ document.getElementById('searchInput').value=''; applyFilters(); }
+function renderTable(data){
+    const tbody=document.getElementById('tableBody');
+    if(!data.length){ tbody.innerHTML='<tr><td colspan="6" class="empty-message">✨ No entries match the filter</td></tr>'; return; }
+    tbody.innerHTML=data.map((item,idx)=>{
+        const orig=movieData.findIndex(m=>ikey(m)===ikey(item));
+        return `<tr>
+            <td style="color:#ffd700;">${idx+1}</td>
+            <td style="color:#fff;">${item.name}</td>
+            <td><span class="year-badge">${item.releaseYear}</span></td>
+            <td style="color:#ffd700;">${formatDuration(item.duration)}</td>
+            <td><span class="type-badge">${item.type}</span></td>
+            <td>
+                <button class="edit-btn" onclick="openEditModal(${orig})"><span>✏️</span> Edit</button>
+                <button class="delete-btn" onclick="deleteEntry(${orig})"><span>🗑️</span> Delete</button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+function updateResultCount(n){
+    const tf=document.getElementById('typeFilter').value;
+    const lbl=tf==='all'?'all entries':tf==='Movie'?'movies':'TV shows';
+    document.getElementById('resultCount').textContent=`Showing ${n} ${lbl}`;
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// EDIT / DELETE ENTRY
+// ══════════════════════════════════════════════════════════════════════
+function openEditModal(i){
+    currentEditIndex=i; const m=movieData[i];
+    document.getElementById('editName').value=m.name;
+    document.getElementById('editYear').value=m.releaseYear;
+    document.getElementById('editDuration').value=m.duration;
+    document.querySelectorAll('input[name="editType"]').forEach(r=>r.checked=(r.value===m.type));
+    document.getElementById('editModal').style.display='flex';
+}
+function closeEditModal(){ document.getElementById('editModal').style.display='none'; currentEditIndex=-1; }
+function saveEdit(){
+    if(currentEditIndex===-1) return;
+    const name=document.getElementById('editName').value.trim();
+    const year=parseInt(document.getElementById('editYear').value);
+    const dur=parseFloat(document.getElementById('editDuration').value);
+    const type=document.querySelector('input[name="editType"]:checked').value;
+    if(!name||!year||!dur){ alert('Please fill in all fields!'); return; }
+    const oldKey=ikey(movieData[currentEditIndex]);
+    const newSnap={name,releaseYear:year,duration:Math.round(dur*10)/10,type};
+    movieData[currentEditIndex]=newSnap;
+    customGroups.forEach(g=>{ g.memberKeys=g.memberKeys.map(k=>ikey(k)===oldKey?{...newSnap}:k); });
+    saveGroups(); closeEditModal(); updatePageSpecificContent();
+    if(document.getElementById('groupPanelWrap').style.display!=='none') renderGroupsList();
+    showSaveIndicator('Entry updated','✏️');
+}
+function deleteEntry(i){
+    const item=movieData[i];
+    if(!confirm(`Delete "${item.name}" from your collection?\n\nThis permanently removes it and unassigns it from any groups.`)) return;
+    const key=ikey(movieData[i]);
+    customGroups.forEach(g=>{ g.memberKeys=g.memberKeys.filter(k=>ikey(k)!==key); });
+    movieData.splice(i,1);
+    if(activeGroupId) pickerSelected=pickerSelected.filter(k=>ikey(k)!==key);
+    saveGroups(); updatePageSpecificContent();
+    if(document.getElementById('groupPanelWrap').style.display!=='none') renderGroupsList();
+    showSaveIndicator('Entry deleted','🗑️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// EXPORT / IMPORT / CLEAR
+// ══════════════════════════════════════════════════════════════════════
+function exportToFile(){
+    applyGroupOrder();
+    const blob=new Blob([JSON.stringify({entries:movieData,groups:customGroups},null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download=`movie-backup-${new Date().toISOString().split('T')[0]}.json`; a.click();
+    URL.revokeObjectURL(url); showSaveIndicator('Backup downloaded','📥');
+}
+function importFromFile(){
+    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json';
+    inp.onchange=e=>{
+        const r=new FileReader(); r.onload=e=>{
+            try{
+                const d=JSON.parse(e.target.result);
+                if(Array.isArray(d)){ movieData=d; customGroups=[]; }
+                else if(d.entries){ movieData=d.entries; customGroups=d.groups||[]; }
+                else{ alert('Invalid format'); return; }
+                saveGroups(); updatePageSpecificContent(); renderGroupsList();
+                showSaveIndicator('Data imported','📤');
+            }catch{ alert('Error reading file'); }
+        }; r.readAsText(e.target.files[0]);
+    }; inp.click();
+}
+function clearAllData(){
+    if(!confirm('Delete ALL entries and groups? This cannot be undone!')) return;
+    movieData=[]; customGroups=[];
+    saveGroups(); updatePageSpecificContent(); renderGroupsList();
+    showSaveIndicator('All data cleared','🗑️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PANEL TOGGLE
+// ══════════════════════════════════════════════════════════════════════
+function toggleGroupPanel(){
+    const wrap=document.getElementById('groupPanelWrap');
+    const btn=document.getElementById('grpToggleBtn');
+    const open=wrap.style.display!=='none';
+    wrap.style.display=open?'none':'block';
+    btn.style.borderColor=open?'':'#ffd700'; btn.style.color=open?'':'#ffd700';
+    if(!open){ renderColorPicker(); renderGroupsList(); }
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// COLOUR PICKER (new group)
+// ══════════════════════════════════════════════════════════════════════
+function renderColorPicker(){
+    document.getElementById('colorPicker').innerHTML=PALETTE.map(c=>
+        `<div class="cswatch ${c===chosenColor?'on':''}" style="background:${c};" onclick="pickColor('${c}')"></div>`
+    ).join('');
+}
+function pickColor(c){ chosenColor=c; renderColorPicker(); }
+
+// ══════════════════════════════════════════════════════════════════════
+// GROUP EDIT MODAL
+// ══════════════════════════════════════════════════════════════════════
+function openGroupEditModal(gId){
+    const g=groupById(gId); if(!g) return;
+    gemGroupId=gId; gemChosenColor=g.color;
+    document.getElementById('gemNameInput').value=g.name;
+    document.getElementById('gemNameInput').style.setProperty('--gem-c',g.color);
+    updateGemDot(g.color); updateGemSaveBtn(g.color); renderGemSwatches();
+    document.getElementById('groupEditModal').classList.add('open');
+    setTimeout(()=>{ const inp=document.getElementById('gemNameInput'); inp.focus(); inp.select(); },60);
+}
+function closeGroupEditModal(){ document.getElementById('groupEditModal').classList.remove('open'); gemGroupId=null; }
+function pickGemColor(c){
+    gemChosenColor=c;
+    document.getElementById('gemNameInput').style.setProperty('--gem-c',c);
+    updateGemDot(c); updateGemSaveBtn(c); renderGemSwatches();
+}
+function updateGemDot(c){ const d=document.getElementById('gemDot'); d.style.background=c; d.style.boxShadow=`0 0 7px ${c}`; }
+function updateGemSaveBtn(c){ const b=document.getElementById('gemSaveBtn'); b.style.background=`linear-gradient(135deg,${c},${c}bb)`; b.style.color='#0a0c0f'; }
+function renderGemSwatches(){
+    document.getElementById('gemSwatches').innerHTML=PALETTE.map(c=>
+        `<div class="gem-swatch ${c===gemChosenColor?'on':''}" style="background:${c};${c===gemChosenColor?`box-shadow:0 0 8px ${c};`:''}" onclick="pickGemColor('${c}')"></div>`
+    ).join('');
+}
+function saveGroupEdit(){
+    const g=groupById(gemGroupId); if(!g) return;
+    const name=document.getElementById('gemNameInput').value.trim();
+    if(!name){ document.getElementById('gemNameInput').style.borderColor='#ff6b6b'; return; }
+    if(customGroups.some(gr=>gr.id!==gemGroupId&&gr.name.toLowerCase()===name.toLowerCase())){
+        document.getElementById('gemNameInput').style.borderColor='#ff6b6b'; return;
+    }
+    g.name=name; g.color=gemChosenColor;
+    closeGroupEditModal(); saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator('Group updated','✏️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// CREATE GROUP
+// ══════════════════════════════════════════════════════════════════════
+function createNewGroup(){
+    const inp=document.getElementById('newGroupName');
+    const err=document.getElementById('createGroupError');
+    const name=inp.value.trim();
+    err.style.display='none';
+    if(!name){ err.textContent='Please enter a group name.'; err.style.display='block'; return; }
+    if(customGroups.some(g=>g.name.toLowerCase()===name.toLowerCase())){
+        err.textContent='A group with this name already exists.'; err.style.display='block'; return;
+    }
+    const newId='g_'+Date.now();
+    customGroups.push({id:newId,name,color:chosenColor,memberKeys:[]});
+    chosenColor=PALETTE[(PALETTE.indexOf(chosenColor)+1)%PALETTE.length];
+    inp.value=''; openBodies.add(newId);
+    saveGroups(); renderColorPicker(); renderGroupsList();
+    showSaveIndicator('Group created','🏷️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// TOGGLE GROUP BODY
+// ══════════════════════════════════════════════════════════════════════
+function toggleGBody(id){
+    if(openBodies.has(id)){
+        openBodies.delete(id);
+        if(activeGroupId===id){ activeGroupId=null; pickerSelected=[]; }
+    } else {
+        openBodies.add(id);
+    }
+    renderGroupsList();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// GROUP-LEVEL SELECTION MODE
+// ══════════════════════════════════════════════════════════════════════
+function toggleGroupSelMode(){
+    groupSelMode=!groupSelMode;
+    groupSelected.clear();
+    const btn=document.getElementById('groupSelModeBtn');
+    const bar=document.getElementById('groupBatchBar');
+    if(groupSelMode){
+        btn.textContent='✕ Exit Selection'; btn.classList.add('active');
+        bar.classList.add('visible');
+    } else {
+        btn.textContent='☑ Select Groups'; btn.classList.remove('active');
+        bar.classList.remove('visible');
+    }
+    renderGroupsList(); updateGroupBatchBar();
+}
+function exitGroupSelMode(){
+    groupSelMode=false; groupSelected.clear();
+    document.getElementById('groupSelModeBtn').textContent='☑ Select Groups';
+    document.getElementById('groupSelModeBtn').classList.remove('active');
+    document.getElementById('groupBatchBar').classList.remove('visible');
+    renderGroupsList(); updateGroupBatchBar();
+}
+function toggleGroupCheck(gId,e){
+    if(e) e.stopPropagation();
+    if(groupSelected.has(gId)) groupSelected.delete(gId);
+    else groupSelected.add(gId);
+    updateGroupBatchBar(); renderGroupsList();
+}
+function selectAllGroups(){
+    customGroups.forEach(g=>groupSelected.add(g.id));
+    updateGroupBatchBar(); renderGroupsList();
+}
+function deselectAllGroups(){
+    groupSelected.clear();
+    updateGroupBatchBar(); renderGroupsList();
+}
+function updateGroupBatchBar(){
+    const n=groupSelected.size;
+    document.getElementById('gbbCount').textContent=`${n} selected`;
+    const noSel=n===0;
+    ['gbbTop','gbbUp','gbbDown','gbbBot','gbbDel'].forEach(id=>{
+        document.getElementById(id).disabled=noSel;
+    });
+}
+
+// Batch move groups
+function batchMoveGroups(dir){
+    if(!groupSelected.size) return;
+    let indices=customGroups.map((g,i)=>groupSelected.has(g.id)?i:-1).filter(i=>i!==-1);
+    if(!indices.length) return;
+    indices.sort((a,b)=>a-b);
+
+    if(dir==='top'){
+        const items=indices.map(i=>customGroups[i]);
+        const rest=customGroups.filter(g=>!groupSelected.has(g.id));
+        customGroups.length=0; items.forEach(g=>customGroups.push(g)); rest.forEach(g=>customGroups.push(g));
+    } else if(dir==='bottom'){
+        const items=indices.map(i=>customGroups[i]);
+        const rest=customGroups.filter(g=>!groupSelected.has(g.id));
+        customGroups.length=0; rest.forEach(g=>customGroups.push(g)); items.forEach(g=>customGroups.push(g));
+    } else if(dir==='up'){
+        if(indices[0]===0) return;
+        for(let i=0;i<indices.length;i++){
+            const from=indices[i],to=from-1;
+            if(to<0) break;
+            [customGroups[from],customGroups[to]]=[customGroups[to],customGroups[from]];
+            indices[i]=to;
+        }
+    } else if(dir==='down'){
+        indices.sort((a,b)=>b-a);
+        if(indices[0]===customGroups.length-1) return;
+        for(let i=0;i<indices.length;i++){
+            const from=indices[i],to=from+1;
+            if(to>=customGroups.length) break;
+            [customGroups[from],customGroups[to]]=[customGroups[to],customGroups[from]];
+            indices[i]=to;
+        }
+    }
+    saveGroups(); renderGroupsList(); applyFilters(); updateGroupBatchBar();
+    showSaveIndicator('Groups reordered','↕️');
+}
+
+// Batch delete groups
+function batchDeleteGroups(){
+    if(!groupSelected.size) return;
+    const names=customGroups.filter(g=>groupSelected.has(g.id)).map(g=>`  • ${g.name}`).join('\n');
+    if(!confirm(`Delete ${groupSelected.size} group(s)?\n\n${names}\n\nItems will be UNASSIGNED — not deleted from your collection.`)) return;
+    customGroups=customGroups.filter(g=>!groupSelected.has(g.id));
+    groupSelected.clear();
+    if(activeGroupId&&!customGroups.find(g=>g.id===activeGroupId)){ activeGroupId=null; pickerSelected=[]; }
+    saveGroups(); renderGroupsList(); applyFilters(); exitGroupSelMode();
+    showSaveIndicator('Groups deleted','🗑️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ITEM-LEVEL SELECTION MODE (per group)
+// ══════════════════════════════════════════════════════════════════════
+function toggleItemSelMode(gId){
+    const s=getGIS(gId);
+    s.mode=!s.mode;
+    if(!s.mode) s.selected.clear();
+    renderGroupsList();
+}
+function exitItemSelMode(gId){
+    const s=getGIS(gId); s.mode=false; s.selected.clear();
+    renderGroupsList();
+}
+function toggleItemCheck(gId,key){
+    const s=getGIS(gId);
+    if(s.selected.has(key)) s.selected.delete(key);
+    else s.selected.add(key);
+    renderGroupsList();
+}
+function selectAllItems(gId){
+    const g=groupById(gId); if(!g) return;
+    const s=getGIS(gId);
+    g.memberKeys.forEach(k=>s.selected.add(ikey(k)));
+    renderGroupsList();
+}
+function deselectAllItems(gId){
+    getGIS(gId).selected.clear();
+    renderGroupsList();
+}
+
+// Batch move items within a group
+function batchMoveItems(gId,dir){
+    const g=groupById(gId); if(!g) return;
+    const s=getGIS(gId); if(!s.selected.size) return;
+    const mc=g.memberKeys;
+
+    let indices=mc.map((k,i)=>s.selected.has(ikey(k))?i:-1).filter(i=>i!==-1);
+    indices.sort((a,b)=>a-b);
+    if(!indices.length) return;
+
+    if(dir==='top'){
+        const selected=indices.map(i=>mc[i]);
+        const rest=mc.filter((_,i)=>!indices.includes(i));
+        g.memberKeys=[...selected,...rest];
+    } else if(dir==='bottom'){
+        const selected=indices.map(i=>mc[i]);
+        const rest=mc.filter((_,i)=>!indices.includes(i));
+        g.memberKeys=[...rest,...selected];
+    } else if(dir==='up'){
+        if(indices[0]===0) return;
+        for(let i=0;i<indices.length;i++){
+            const from=indices[i],to=from-1;
+            if(to<0) break;
+            [mc[from],mc[to]]=[mc[to],mc[from]];
+            indices[i]=to;
+        }
+    } else if(dir==='down'){
+        indices.sort((a,b)=>b-a);
+        if(indices[0]===mc.length-1) return;
+        for(let i=0;i<indices.length;i++){
+            const from=indices[i],to=from+1;
+            if(to>=mc.length) break;
+            [mc[from],mc[to]]=[mc[to],mc[from]];
+            indices[i]=to;
+        }
+    }
+    saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator('Items reordered','↕️');
+}
+
+// Batch remove items from group (does NOT delete from movieData)
+function batchDeleteItems(gId){
+    const g=groupById(gId); if(!g) return;
+    const s=getGIS(gId); if(!s.selected.size) return;
+    const names=g.memberKeys.filter(k=>s.selected.has(ikey(k))).map(k=>`  • ${k.name}`).join('\n');
+    if(!confirm(`Remove ${s.selected.size} item(s) from "${g.name}"?\n\n${names}\n\nThis only unassigns them — they stay in your collection.`)) return;
+    g.memberKeys=g.memberKeys.filter(k=>!s.selected.has(ikey(k)));
+    s.selected.clear();
+    saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator('Items removed from group','🗑️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAG & DROP — GROUPS
+// ══════════════════════════════════════════════════════════════════════
+function handleGroupDragStart(e,gId){
+    if(groupSelMode){ e.preventDefault(); return; }
+    draggedGroupEl=e.currentTarget; draggedGroupEl.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',gId);
+}
+function handleGroupDragEnd(e){
+    if(draggedGroupEl){ draggedGroupEl.classList.remove('dragging'); draggedGroupEl=null; }
+    document.querySelectorAll('.gc.drag-over').forEach(el=>el.classList.remove('drag-over'));
+}
+function handleGroupDragOver(e){
+    e.preventDefault(); e.dataTransfer.dropEffect='move';
+    const t=e.currentTarget;
+    if(t!==draggedGroupEl&&t.classList.contains('gc')) t.classList.add('drag-over');
+}
+function handleGroupDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function handleGroupDrop(e,targetId){
+    e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+    const draggedId=e.dataTransfer.getData('text/plain');
+    if(draggedId===targetId) return;
+    const fromIdx=customGroups.findIndex(g=>g.id===draggedId);
+    const toIdx=customGroups.findIndex(g=>g.id===targetId);
+    if(fromIdx===-1||toIdx===-1) return;
+    const grp=customGroups.splice(fromIdx,1)[0];
+    customGroups.splice(fromIdx<toIdx?toIdx-1:toIdx,0,grp);
+    if(draggedGroupEl){ draggedGroupEl.classList.remove('dragging'); draggedGroupEl=null; }
+    saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator('Group order updated','↕️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DRAG & DROP — MEMBER ROWS
+// ══════════════════════════════════════════════════════════════════════
+function handleDragStart(e,gId,pos){
+    e.stopPropagation();
+    if(getGIS(gId).mode){ e.preventDefault(); return; }
+    draggedRow=e.currentTarget; dragGroupId_=gId;
+    draggedRow.classList.add('dragging');
+    e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',pos.toString());
+}
+function handleDragEnd(e){
+    if(draggedRow){ draggedRow.classList.remove('dragging'); draggedRow=null; } dragGroupId_=null;
+    document.querySelectorAll('.mrow.drag-over').forEach(el=>el.classList.remove('drag-over'));
+    document.querySelectorAll('.drop-edge.active').forEach(el=>el.classList.remove('active'));
+}
+function handleDragOver(e){
+    e.preventDefault(); e.stopPropagation(); e.dataTransfer.dropEffect='move';
+    const t=e.currentTarget;
+    if(t.classList.contains('mrow')&&t!==draggedRow) t.classList.add('drag-over');
+}
+function handleDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function handleEdgeDragOver(e){ e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.add('active'); }
+function handleEdgeDragLeave(e){ e.currentTarget.classList.remove('active'); }
+function handleEdgeDrop(e,gId,position){
+    e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove('active');
+    const g=groupById(gId); if(!g||!draggedRow||dragGroupId_!==gId) return;
+    const fromPos=parseInt(e.dataTransfer.getData('text/plain'));
+    const member=g.memberKeys.splice(fromPos,1)[0];
+    g.memberKeys.splice(position==='top'?0:g.memberKeys.length,0,member);
+    draggedRow.classList.remove('dragging'); draggedRow=null; dragGroupId_=null;
+    saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator('Order updated','↕️');
+}
+function handleDrop(e,gId,targetPos){
+    e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove('drag-over');
+    const g=groupById(gId); if(!g||!draggedRow||dragGroupId_!==gId) return;
+    const fromPos=parseInt(e.dataTransfer.getData('text/plain'));
+    if(fromPos===targetPos) return;
+    const member=g.memberKeys.splice(fromPos,1)[0];
+    g.memberKeys.splice(fromPos<targetPos?targetPos-1:targetPos,0,member);
+    draggedRow.classList.remove('dragging'); draggedRow=null; dragGroupId_=null;
+    saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator('Order updated','↕️');
+}
+
+// Single-item move
+function moveGroupMember(gId,pos,dir){
+    const g=groupById(gId); if(!g) return;
+    const np=pos+dir;
+    if(np<0||np>=g.memberKeys.length) return;
+    [g.memberKeys[pos],g.memberKeys[np]]=[g.memberKeys[np],g.memberKeys[pos]];
+    saveGroups(); renderGroupsList(); applyFilters(); showSaveIndicator('Order updated','↕️');
+}
+function moveToExtreme(gId,pos,target){
+    const g=groupById(gId); if(!g||g.memberKeys.length<=1) return;
+    if(target==='top'&&pos===0) return;
+    if(target==='bottom'&&pos===g.memberKeys.length-1) return;
+    const member=g.memberKeys.splice(pos,1)[0];
+    if(target==='top') g.memberKeys.unshift(member); else g.memberKeys.push(member);
+    saveGroups(); renderGroupsList(); applyFilters(); showSaveIndicator(`Moved to ${target}`,'⏫');
+}
+
+// Sort group members
+function sortGroupMembers(gId,sortBy){
+    const g=groupById(gId); if(!g||!g.memberKeys.length) return;
+    const res=g.memberKeys.map(k=>{ const real=movieData.find(m=>ikey(m)===ikey(k))||k; return {key:k,name:real.name,year:real.releaseYear,duration:real.duration}; });
+    switch(sortBy){
+        case 'name-asc':      res.sort((a,b)=>a.name.localeCompare(b.name)); break;
+        case 'name-desc':     res.sort((a,b)=>b.name.localeCompare(a.name)); break;
+        case 'year-asc':      res.sort((a,b)=>a.year-b.year); break;
+        case 'year-desc':     res.sort((a,b)=>b.year-a.year); break;
+        case 'duration-asc':  res.sort((a,b)=>(a.duration||0)-(b.duration||0)); break;
+        case 'duration-desc': res.sort((a,b)=>(b.duration||0)-(a.duration||0)); break;
+        default: return;
+    }
+    g.memberKeys=res.map(r=>r.key);
+    saveGroups(); renderGroupsList(); applyFilters(); showSaveIndicator('Group sorted','🔽');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// RENDER GROUPS LIST
+// ══════════════════════════════════════════════════════════════════════
+function renderGroupsList(){
+    const el=document.getElementById('groupsList');
+    el.className=groupSelMode?'g-sel-mode':'';
+
+    if(!customGroups.length){
+        el.innerHTML=`<div style="text-align:center;padding:36px 20px;color:#2d3748;font-size:0.88em;">
+            <div style="font-size:2.2em;margin-bottom:10px;opacity:.25;">🏷️</div>
+            No groups yet — create your first one above.
+        </div>`;
+        return;
+    }
+
+    el.innerHTML=customGroups.map(g=>{
+        const isOpen     = openBodies.has(g.id);
+        const isActive   = activeGroupId===g.id;
+        const mc         = g.memberKeys.length;
+        const gIsSelected= groupSelMode&&groupSelected.has(g.id);
+        const gis        = getGIS(g.id);
+        const inItemSel  = gis.mode;
+        const sel        = gis.selected;
+        const selCount   = sel.size;
+
+        // ── Build member body ──────────────────────────────────────
+        let bodyContent='';
+        if(mc===0){
+            bodyContent=`<div class="gc-empty"><div class="eico">🎬</div>No entries assigned yet — click <b style="color:${g.color};">Assign</b> to add some.</div>`;
+        } else {
+            // Item-level batch toolbar
+            const itemBatchBar=inItemSel?`<div class="batch-toolbar">
+                <span class="bt-label">Selected:</span>
+                <span class="bt-count" style="background:${g.color}22;color:${g.color};border:1px solid ${g.color}44;">${selCount}</span>
+                <button class="bbtn selall" onclick="selectAllItems('${g.id}')">☑ All</button>
+                <button class="bbtn desel"  onclick="deselectAllItems('${g.id}')">☐ None</button>
+                <button class="bbtn top"  onclick="batchMoveItems('${g.id}','top')"    ${selCount===0?'disabled':''}>⏫ Top</button>
+                <button class="bbtn up"   onclick="batchMoveItems('${g.id}','up')"     ${selCount===0?'disabled':''}>▲ Up</button>
+                <button class="bbtn down" onclick="batchMoveItems('${g.id}','down')"   ${selCount===0?'disabled':''}>▼ Down</button>
+                <button class="bbtn bot"  onclick="batchMoveItems('${g.id}','bottom')" ${selCount===0?'disabled':''}>⏬ Bottom</button>
+                <button class="bbtn del"  onclick="batchDeleteItems('${g.id}')"        ${selCount===0?'disabled':''}>🗑 Remove</button>
+                <div style="flex:1;"></div>
+                <button class="bbtn exit" onclick="exitItemSelMode('${g.id}')">✕ Exit</button>
+            </div>`:'';
+
+            // Sort controls + select-items toggle
+            const controls=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;padding:0 2px;">
+                <span style="color:#3d4a5a;font-size:0.68em;font-weight:800;text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
+                <select class="sort-group-select" style="--gc:${g.color};" onchange="sortGroupMembers('${g.id}',this.value);this.value=''">
+                    <option value="">Manual / drag</option>
+                    <option value="name-asc">Name A–Z</option>
+                    <option value="name-desc">Name Z–A</option>
+                    <option value="year-asc">Year Old–New</option>
+                    <option value="year-desc">Year New–Old</option>
+                    <option value="duration-asc">Duration Low–High</option>
+                    <option value="duration-desc">Duration High–Low</option>
+                </select>
+                <button class="sel-toggle-btn ${inItemSel?'active':''}" onclick="event.stopPropagation();toggleItemSelMode('${g.id}')">
+                    ${inItemSel?'✕ Exit Select':'☑ Select Items'}
+                </button>
+            </div>`;
+
+            // Column header — show/hide checkbox column based on mode
+            const hdrChk=inItemSel?`<span class="mh-chk"></span>`:'';
+            const headerRow=`<div class="mlist-header" style="padding-left:${inItemSel?'4px':'44px'};">
+                ${hdrChk}
+                <span class="mh-title">Title</span>
+                <span class="mh-year">Year</span>
+                <span class="mh-dur">Duration</span>
+                <span class="mh-type">Type</span>
+                <span class="mh-act">Act</span>
+            </div>`;
+
+            // Top edge drop zone
+            let rowsHTML=`<div class="drop-edge" style="--gc:${g.color};"
+                ondragover="handleEdgeDragOver(event)" ondragleave="handleEdgeDragLeave(event)"
+                ondrop="handleEdgeDrop(event,'${g.id}','top')"></div>`;
+
+            g.memberKeys.forEach((k,pos)=>{
+                const real=movieData.find(m=>ikey(m)===ikey(k))||k;
+                const safeKey=ikey(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+                const tclass=real.type==='Movie'?'movie':'tvshow';
+                const isFirst=pos===0, isLast=pos===mc-1;
+                const isChecked=sel.has(ikey(k));
+
+                rowsHTML+=`<div class="mrow ${isChecked?'m-selected':''} ${inItemSel?'sel-mode':''}" style="--gc:${g.color};"
+                    draggable="${!inItemSel}"
+                    ondragstart="handleDragStart(event,'${g.id}',${pos})"
+                    ondragend="handleDragEnd(event)"
+                    ondragover="handleDragOver(event)"
+                    ondragleave="handleDragLeave(event)"
+                    ondrop="handleDrop(event,'${g.id}',${pos})">
+                    <div class="mcheck-wrap">
+                        <div class="mcheck ${isChecked?'on':''}" style="--gc:${g.color};" onclick="event.stopPropagation();toggleItemCheck('${g.id}','${safeKey}')">
+                            ${isChecked?'✓':''}
+                        </div>
+                    </div>
+                    <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+                    <div class="mnum" style="background:${g.color};">${pos+1}</div>
+                    <button class="move-btn" onclick="event.stopPropagation();moveToExtreme('${g.id}',${pos},'top')"    ${isFirst?'disabled':''} title="Move to top">⏫</button>
+                    <button class="move-btn" onclick="event.stopPropagation();moveGroupMember('${g.id}',${pos},-1)"      ${isFirst?'disabled':''} title="Move up">▲</button>
+                    <button class="move-btn" onclick="event.stopPropagation();moveGroupMember('${g.id}',${pos},1)"       ${isLast?'disabled':''} title="Move down">▼</button>
+                    <button class="move-btn" onclick="event.stopPropagation();moveToExtreme('${g.id}',${pos},'bottom')"  ${isLast?'disabled':''} title="Move to bottom">⏬</button>
+                    <div class="mtitle" title="${real.name}">${real.name}</div>
+                    <div class="mmeta-year">${real.releaseYear}</div>
+                    <div class="mmeta-dur">${formatDur(real.duration)}</div>
+                    <span class="mmeta-type ${tclass}">${real.type}</span>
+                    <button class="mrm" onclick="event.stopPropagation();removeGroupMember('${g.id}','${safeKey}')">✕</button>
+                </div>`;
+            });
+
+            // Bottom edge drop zone
+            rowsHTML+=`<div class="drop-edge" style="--gc:${g.color};"
+                ondragover="handleEdgeDragOver(event)" ondragleave="handleEdgeDragLeave(event)"
+                ondrop="handleEdgeDrop(event,'${g.id}','bottom')"></div>`;
+
+            bodyContent=itemBatchBar+controls+`<div class="member-list">${headerRow}${rowsHTML}</div>`;
+        }
+
+        const pickerSection=isActive?buildPickerHTML(g):'';
+
+        const actionBtns=`<button class="hbtn" style="border-color:#21282f;color:#94a3b8;"
+                onclick="event.stopPropagation();openGroupEditModal('${g.id}')">✏️ Edit</button>
+            <button class="hbtn" style="border-color:${g.color}55;color:${g.color};background:${g.color}12;"
+                onclick="event.stopPropagation();openPicker('${g.id}')">＋ Assign</button>
+            <button class="hbtn" style="border-color:#ff6b6b33;color:#ff6b6b;"
+                onclick="event.stopPropagation();deleteGroup('${g.id}')">🗑</button>`;
+
+        return `<div class="gc ${isOpen?'is-open':''} ${gIsSelected?'g-selected':''}" style="--gc:${g.color};"
+            draggable="${!groupSelMode}"
+            ondragstart="handleGroupDragStart(event,'${g.id}')"
+            ondragend="handleGroupDragEnd(event)"
+            ondragover="handleGroupDragOver(event)"
+            ondragleave="handleGroupDragLeave(event)"
+            ondrop="handleGroupDrop(event,'${g.id}')">
+            <div class="gc-head" onclick="${groupSelMode?`toggleGroupCheck('${g.id}',event);`:``}toggleGBody('${g.id}')">
+                <div class="g-check-wrap">
+                    <div class="g-check ${gIsSelected?'on':''}" style="--gc:${g.color};" onclick="toggleGroupCheck('${g.id}',event)">${gIsSelected?'✓':''}</div>
+                </div>
+                ${!groupSelMode?`<span class="group-drag-handle" onclick="event.stopPropagation()">⋮⋮</span>`:''}
+                <div class="gc-dot" style="background:${g.color};box-shadow:0 0 6px ${g.color}88;"></div>
+                <span class="gc-name">${g.name}</span>
+                <span class="gc-pill" style="color:${g.color};border-color:${g.color}55;background:${g.color}12;">${mc} item${mc!==1?'s':''}</span>
+                ${!groupSelMode?actionBtns:''}
+                <span class="gcaret ${isOpen?'open':''}">▾</span>
+            </div>
+            <div class="gc-body ${isOpen?'open':''}">
+                ${bodyContent}
+                ${pickerSection}
+            </div>
+        </div>`;
+    }).join('');
+
+    if(activeGroupId){
+        const listEl=document.getElementById(`plist_${activeGroupId}`);
+        if(listEl) fillPicker(activeGroupId);
+    }
+    updateGroupBatchBar();
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// DELETE GROUP / REMOVE MEMBER
+// ══════════════════════════════════════════════════════════════════════
+function deleteGroup(id){
+    const g=groupById(id); if(!g) return;
+    const ml=g.memberKeys.map(k=>`  • ${k.name} (${k.releaseYear})`).join('\n');
+    const detail=g.memberKeys.length?`\n\n${g.memberKeys.length} item(s) will be UNASSIGNED (not deleted):\n${ml}`:'';
+    if(!confirm(`Delete the group "${g.name}"?${detail}\n\nYour movie/show data stays intact.`)) return;
+    customGroups=customGroups.filter(gr=>gr.id!==id);
+    if(activeGroupId===id){ activeGroupId=null; pickerSelected=[]; }
+    openBodies.delete(id); groupSelected.delete(id);
+    saveGroups(); renderGroupsList(); applyFilters(); showSaveIndicator('Group deleted','🗑️');
+}
+function removeGroupMember(gId,key){
+    const g=groupById(gId); if(!g) return;
+    const member=g.memberKeys.find(k=>ikey(k)===key);
+    if(!confirm(`Remove "${member?member.name:'this item'}" from "${g.name}"?\n\nThe entry stays in your collection.`)) return;
+    g.memberKeys=g.memberKeys.filter(k=>ikey(k)!==key);
+    if(activeGroupId===gId) pickerSelected=pickerSelected.filter(k=>ikey(k)!==key);
+    saveGroups(); renderGroupsList(); applyFilters(); showSaveIndicator('Item removed from group','✏️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// ITEM PICKER
+// ══════════════════════════════════════════════════════════════════════
+function openPicker(gId){
+    activeGroupId=gId;
+    const g=groupById(gId);
+    pickerSelected=[...g.memberKeys.map(k=>({...k}))];
+    openBodies.add(gId);
+    renderGroupsList(); fillPicker(gId);
+    setTimeout(()=>{ const el=document.getElementById(`picker_${gId}`); if(el) el.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
+}
+function closePicker(){ activeGroupId=null; pickerSelected=[]; renderGroupsList(); }
+
+function buildPickerHTML(g){
+    return `<div class="picker-wrap" id="picker_${g.id}" style="--gc:${g.color};">
+        <div class="picker-head">
+            <span style="color:${g.color};font-weight:800;font-size:0.84em;flex-shrink:0;">＋ Assigning to <u>${g.name}</u></span>
+            <div style="flex:1"></div>
+            <button class="picker-all-btn" onclick="event.stopPropagation();selectAllInPicker('${g.id}')">☑️ Select All</button>
+            <button class="picker-all-btn clear" onclick="event.stopPropagation();deselectAllInPicker('${g.id}')">🗑️ Deselect All</button>
+            <input  id="ps_${g.id}"  class="pf" type="text" placeholder="Search…" oninput="fillPicker('${g.id}')" style="width:130px;">
+            <select id="pt_${g.id}"  class="pf" onchange="fillPicker('${g.id}')">
+                <option value="all">All Types</option><option value="Movie">Movies</option><option value="TV Show">TV Shows</option>
+            </select>
+            <select id="pso_${g.id}" class="pf" onchange="fillPicker('${g.id}')">
+                <option value="original">Original Order</option>
+                <option value="name-asc">Name A–Z</option><option value="name-desc">Name Z–A</option>
+                <option value="year-asc">Year Old–New</option><option value="year-desc">Year New–Old</option>
+            </select>
+            <label style="display:flex;align-items:center;gap:5px;color:#4a5568;font-size:0.78em;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+                <input type="checkbox" id="ph_${g.id}" onchange="fillPicker('${g.id}')" style="accent-color:${g.color};"> Hide assigned
+            </label>
+        </div>
+        <div class="picker-list" id="plist_${g.id}"></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:11px 16px;background:#0a0d12;border-top:1px solid #1c242d;flex-wrap:wrap;">
+            <span id="pcnt_${g.id}" style="color:#3d4a5a;font-size:0.8em;flex:1;"></span>
+            <button onclick="closePicker()" style="background:transparent;border:1px solid #21282f;color:#4a5568;padding:7px 16px;border-radius:9px;font-size:0.82em;cursor:pointer;">Cancel</button>
+            <button onclick="applyPicker('${g.id}')" style="background:linear-gradient(135deg,${g.color},${g.color}bb);color:#0a0c0f;border:none;padding:8px 22px;border-radius:9px;font-weight:900;font-size:0.88em;cursor:pointer;">💾 Save Group</button>
+        </div>
+    </div>`;
+}
+function getVisiblePickerItems(gId){
+    const g=groupById(gId); if(!g) return [];
+    const q=(document.getElementById(`ps_${gId}`)?.value||'').toLowerCase();
+    const typeF=document.getElementById(`pt_${gId}`)?.value||'all';
+    const sortM=document.getElementById(`pso_${gId}`)?.value||'original';
+    const hideA=document.getElementById(`ph_${gId}`)?.checked||false;
+    const aKeys=assignedKeys();
+    let items=movieData.map((item,idx)=>({item,idx,key:ikey(item)}));
+    if(q) items=items.filter(({item})=>item.name.toLowerCase().includes(q));
+    if(typeF!=='all') items=items.filter(({item})=>item.type===typeF);
+    if(hideA){
+        items=items.filter(({key})=>{
+            const inPicker=pickerSelected.some(k=>ikey(k)===key);
+            const inOther=aKeys.has(key)&&!g.memberKeys.some(k=>ikey(k)===key)&&!inPicker;
+            return inPicker||!inOther;
+        });
+    }
+    switch(sortM){
+        case 'name-asc':  items.sort((a,b)=>a.item.name.localeCompare(b.item.name)); break;
+        case 'name-desc': items.sort((a,b)=>b.item.name.localeCompare(a.item.name)); break;
+        case 'year-asc':  items.sort((a,b)=>a.item.releaseYear-b.item.releaseYear); break;
+        case 'year-desc': items.sort((a,b)=>b.item.releaseYear-a.item.releaseYear); break;
+    }
+    return items;
+}
+function selectAllInPicker(gId){
+    const g=groupById(gId); if(!g) return;
+    const aKeys=assignedKeys();
+    const selKeys=new Set(pickerSelected.map(k=>ikey(k)));
+    getVisiblePickerItems(gId).forEach(({item,key})=>{
+        const inOther=aKeys.has(key)&&!g.memberKeys.some(k=>ikey(k)===key);
+        if(!inOther&&!selKeys.has(key)) pickerSelected.push(snap(item));
+    });
+    fillPicker(gId);
+}
+function deselectAllInPicker(gId){ pickerSelected=[]; fillPicker(gId); }
+function fillPicker(gId){
+    const g=groupById(gId); if(!g) return;
+    const listEl=document.getElementById(`plist_${gId}`); if(!listEl) return;
+    const items=getVisiblePickerItems(gId);
+    const aKeys=assignedKeys();
+    if(!items.length){
+        listEl.innerHTML='<p style="color:#3d4a5a;padding:14px;font-size:0.85em;">No entries match.</p>';
+        const cnt=document.getElementById(`pcnt_${gId}`);
+        if(cnt) cnt.textContent=`${pickerSelected.length} item${pickerSelected.length!==1?'s':''} selected`;
+        return;
+    }
+    listEl.innerHTML=items.map(({item,key})=>{
+        const isSel=pickerSelected.some(k=>ikey(k)===key);
+        const inOther=!isSel&&aKeys.has(key)&&!g.memberKeys.some(k=>ikey(k)===key);
+        const ord=isSel?pickerSelected.findIndex(k=>ikey(k)===key)+1:'';
+        const og=inOther?groupOfKey(key):null;
+        const safeKey=key.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        return `<div class="pi ${isSel?'pi-on':''} ${inOther?'pi-lock':''}"
+            onclick="${inOther?'':` tpick('${gId}','${safeKey}')`}" style="--gc:${g.color};">
+            <div class="picheck ${isSel?'on':''}" style="${isSel?`--gc:${g.color};`:''}">${isSel?ord:''}</div>
+            <div class="piinfo">
+                <div class="pititle">${item.name}</div>
+                <div class="pimeta">${item.releaseYear} &middot; ${item.type}${og?`<span style="color:${og.color};margin-left:6px;">• ${og.name}</span>`:''}</div>
+            </div>
+            ${isSel?`<span class="piord" style="color:${g.color};">#${ord}</span>`:''}
+        </div>`;
+    }).join('');
+    const cnt=document.getElementById(`pcnt_${gId}`);
+    if(cnt) cnt.textContent=`${pickerSelected.length} item${pickerSelected.length!==1?'s':''} selected`;
+}
+function tpick(gId,key){
+    const pos=pickerSelected.findIndex(k=>ikey(k)===key);
+    if(pos===-1){ const m=movieData.find(m=>ikey(m)===key); if(m) pickerSelected.push(snap(m)); }
+    else pickerSelected.splice(pos,1);
+    fillPicker(gId);
+}
+function applyPicker(gId){
+    const g=groupById(gId); if(!g) return;
+    g.memberKeys=[...pickerSelected.map(k=>({...k}))];
+    closePicker(); saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator(`"${g.name}" saved`,'🏷️');
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// MISC
+// ══════════════════════════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ closeEditModal(); closeGroupEditModal(); if(activeGroupId) closePicker(); }
+});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadGroups(); refreshData(); } });
+</script>
+</body>
+</html>
