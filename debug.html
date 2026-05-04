@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Tracker - Debug Test</title>
+    <style>
+        body { font-family: monospace; background: #0a0c0f; color: #ccc; padding: 30px; }
+        h2 { color: #ffd700; }
+        .test { margin: 16px 0; padding: 14px; border-radius: 8px; background: #1a1f26; }
+        .pass { border-left: 4px solid #2ecc71; }
+        .fail { border-left: 4px solid #e74c3c; }
+        .warn { border-left: 4px solid #f39c12; }
+        .info { border-left: 4px solid #3498db; }
+        .label { font-size: 13px; color: #888; margin-bottom: 6px; }
+        .result { font-size: 15px; color: #fff; }
+        .detail { font-size: 12px; color: #aaa; margin-top: 6px; word-break: break-all; }
+        button {
+            background: #ffd700; color: #000; border: none;
+            padding: 12px 24px; border-radius: 8px; font-size: 15px;
+            cursor: pointer; margin: 8px 8px 8px 0; font-family: monospace;
+        }
+        button:hover { background: #e6c200; }
+        #log { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h2>Movie Tracker — Gist Debug Tool</h2>
+    <p style="color:#aaa">This page tests whether your GitHub Token and Gist ID are working correctly.<br>Open this file in your browser after uploading it alongside your other files.</p>
+
+    <button onclick="runAllTests()">Run All Tests</button>
+    <button onclick="testRestore()">Test Restore from Gist</button>
+    <button onclick="testBackup()">Test Backup to Gist</button>
+    <button onclick="showLocalStorage()">Show localStorage Data</button>
+
+    <div id="log"></div>
+
+    <script src="data-manager.js"></script>
+    <script>
+        const log = document.getElementById('log');
+
+        function addResult(label, status, result, detail = '') {
+            const div = document.createElement('div');
+            div.className = `test ${status}`;
+            div.innerHTML = `
+                <div class="label">${label}</div>
+                <div class="result">${result}</div>
+                ${detail ? `<div class="detail">${detail}</div>` : ''}
+            `;
+            log.appendChild(div);
+        }
+
+        function clearLog() {
+            log.innerHTML = '';
+        }
+
+        async function runAllTests() {
+            clearLog();
+
+            // Test 1: Token present
+            if (!GITHUB_TOKEN || GITHUB_TOKEN === 'YOUR_GITHUB_TOKEN_HERE') {
+                addResult('GitHub Token', 'fail', 'MISSING — token is empty or placeholder', 'Open data-manager.js and paste your token');
+            } else {
+                addResult('GitHub Token', 'pass', 'Found: ' + GITHUB_TOKEN.slice(0, 8) + '••••••••••••••••••••••••••••••••');
+            }
+
+            // Test 2: Gist ID present
+            if (!GIST_ID || GIST_ID === 'YOUR_GIST_ID_HERE') {
+                addResult('Gist ID', 'fail', 'MISSING — Gist ID is empty or placeholder', 'Open data-manager.js and paste your Gist ID');
+            } else {
+                addResult('Gist ID', 'pass', 'Found: ' + GIST_ID);
+            }
+
+            // Test 3: isGistConfigured()
+            const configured = isGistConfigured();
+            addResult(
+                'isGistConfigured() check',
+                configured ? 'pass' : 'fail',
+                configured ? 'Returns TRUE — values are set' : 'Returns FALSE — values are still placeholders'
+            );
+
+            if (!configured) {
+                addResult('Stopping here', 'warn', 'Fix token and Gist ID first, then re-run tests', '');
+                return;
+            }
+
+            // Test 4: Can reach GitHub API at all
+            addResult('Network test', 'info', 'Testing connection to GitHub API…', '');
+            try {
+                const pingRes = await fetch('https://api.github.com/');
+                if (pingRes.ok) {
+                    addResult('GitHub API reachable', 'pass', 'Connected successfully');
+                } else {
+                    addResult('GitHub API reachable', 'fail', 'Got status ' + pingRes.status);
+                }
+            } catch (e) {
+                addResult('GitHub API reachable', 'fail', 'Network error — no internet?', e.message);
+                return;
+            }
+
+            // Test 5: Token is valid (fetch user info)
+            try {
+                const userRes = await fetch('https://api.github.com/user', {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                if (userRes.ok) {
+                    const user = await userRes.json();
+                    addResult('Token is valid', 'pass', 'Authenticated as: ' + user.login, 'Token has correct permissions');
+                } else if (userRes.status === 401) {
+                    addResult('Token is valid', 'fail', 'INVALID TOKEN — GitHub returned 401 Unauthorized', 'Generate a new token at github.com/settings/tokens with "gist" scope');
+                } else {
+                    addResult('Token is valid', 'warn', 'Unexpected status: ' + userRes.status);
+                }
+            } catch (e) {
+                addResult('Token is valid', 'fail', 'Error checking token', e.message);
+            }
+
+            // Test 6: Gist exists and is readable
+            try {
+                const gistRes = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
+                    headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+                });
+                if (gistRes.ok) {
+                    const gist = await gistRes.json();
+                    const file = gist.files?.['movie-data.json'];
+                    if (file) {
+                        const content = JSON.parse(file.content);
+                        addResult(
+                            'Gist readable',
+                            'pass',
+                            `Found movie-data.json with ${Array.isArray(content) ? content.length : '?'} entries`,
+                            'Last updated: ' + (gist.updated_at || 'unknown')
+                        );
+                    } else {
+                        addResult('Gist readable', 'warn', 'Gist found but movie-data.json file is missing inside it', 'Make sure the filename inside your Gist is exactly: movie-data.json');
+                    }
+                } else if (gistRes.status === 404) {
+                    addResult('Gist readable', 'fail', 'Gist NOT FOUND — 404 error', 'Double-check your Gist ID. Go to gist.github.com and copy the ID from the URL');
+                } else {
+                    addResult('Gist readable', 'fail', 'Error reading Gist: status ' + gistRes.status);
+                }
+            } catch (e) {
+                addResult('Gist readable', 'fail', 'Error fetching Gist', e.message);
+            }
+
+            // Test 7: localStorage state
+            showLocalStorage();
+        }
+
+        async function testRestore() {
+            clearLog();
+            addResult('Restore test', 'info', 'Attempting to restore data from Gist…', '');
+            try {
+                const data = await restoreFromGist();
+                if (data && data.length > 0) {
+                    addResult('Restore result', 'pass', `Successfully restored ${data.length} movies from Gist!`, JSON.stringify(data[0]));
+                } else if (data && data.length === 0) {
+                    addResult('Restore result', 'warn', 'Gist is reachable but has 0 movies saved in it', 'Your Gist file may be empty: []');
+                } else {
+                    addResult('Restore result', 'fail', 'Restore returned null — check token and Gist ID', 'Run "Run All Tests" for detailed diagnosis');
+                }
+            } catch (e) {
+                addResult('Restore result', 'fail', 'Exception during restore', e.message);
+            }
+        }
+
+        async function testBackup() {
+            clearLog();
+            const raw = localStorage.getItem('movieTrackerData');
+            if (!raw) {
+                addResult('Backup test', 'warn', 'No data in localStorage to backup', 'Add some movies first, then try again');
+                return;
+            }
+            const data = JSON.parse(raw);
+            addResult('Backup test', 'info', `Attempting to backup ${data.length} movies to Gist…`, '');
+            const result = await backupToGist(data);
+            if (result) {
+                addResult('Backup result', 'pass', `Successfully backed up ${data.length} movies to Gist!`);
+            } else {
+                addResult('Backup result', 'fail', 'Backup failed — check token permissions and Gist ID');
+            }
+        }
+
+        function showLocalStorage() {
+            const raw = localStorage.getItem('movieTrackerData');
+            if (!raw) {
+                addResult('localStorage', 'warn', 'EMPTY — no movie data in this browser', 'This is why you lose data after clearing cache');
+            } else {
+                const data = JSON.parse(raw);
+                addResult('localStorage', 'pass', `Contains ${data.length} movies`, 'First entry: ' + JSON.stringify(data[0] || {}));
+            }
+        }
+
+        // fake showSaveIndicator so data-manager.js doesn't crash here
+        function showSaveIndicator(msg, icon) {
+            console.log(icon, msg);
+        }
+    </script>
+</body>
+</html>
