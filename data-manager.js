@@ -1,11 +1,24 @@
 // =============================================
-// DATA MANAGER - WITH GITHUB GIST AUTO-BACKUP
+// DATA MANAGER - WITH FIREBASE AUTO-BACKUP
 // =============================================
 
-const GITHUB_TOKEN = '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';
-const GIST_ID      = '28384e87e0185be5e8e8a663c106c11b';
-const GIST_FILE    = 'movie-data.json';
-const STORAGE_KEY  = 'movieTrackerData';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBNirB-k4ASmHIE3Zm6hluxStFh1kwOSII",
+    authDomain: "movie-tracker-a2471.firebaseapp.com",
+    projectId: "movie-tracker-a2471",
+    storageBucket: "movie-tracker-a2471.firebasestorage.app",
+    messagingSenderId: "984184348188",
+    appId: "1:984184348188:web:2b3f5804052adcb77889d9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const STORAGE_KEY = 'movieTrackerData';
+const FIREBASE_DOC = 'movies/data';
 
 // How often to auto-backup (in seconds). Default: every 30 seconds.
 const AUTO_BACKUP_INTERVAL = 30;
@@ -27,7 +40,7 @@ function loadData() {
                 return parsed;
             }
         }
-        console.log('No data in localStorage — will try Gist');
+        console.log('No data in localStorage — will try Firebase');
         return null;
     } catch (error) {
         console.error('Error loading local data:', error);
@@ -64,93 +77,49 @@ function formatDuration(minutes) {
 }
 
 // ──────────────────────────────────────────────
-// GITHUB GIST BACKUP
+// FIREBASE BACKUP
 // ──────────────────────────────────────────────
 
-function isGistConfigured() {
-    return GITHUB_TOKEN !== 'YOUR_GITHUB_TOKEN_HERE' &&
-           GIST_ID      !== 'YOUR_GIST_ID_HERE';
-}
-
-// Save data to GitHub Gist
-async function backupToGist(data) {
-    if (!isGistConfigured()) {
-        console.warn('⚠️ Gist not configured — skipping backup');
-        return false;
-    }
-
+// Save data to Firebase
+async function backupToFirebase(data) {
     try {
-        const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': `token ${GITHUB_TOKEN}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                files: {
-                    [GIST_FILE]: {
-                        content: JSON.stringify(data, null, 2)
-                    }
-                }
-            })
-        });
-
-        if (response.ok) {
-            const now = new Date().toLocaleTimeString();
-            console.log(`✅ Backed up to Gist at ${now}:`, data.length, 'items');
-            showSaveIndicator('Backed up to cloud ☁️', '✅');
-            return true;
-        } else {
-            const err = await response.json();
-            console.error('❌ Gist backup failed:', err.message);
-            showSaveIndicator('Backup failed — check token', '⚠️');
-            return false;
-        }
+        const docRef = doc(db, 'movies', 'data');
+        await setDoc(docRef, { movies: data, updatedAt: new Date().toISOString() });
+        const now = new Date().toLocaleTimeString();
+        console.log(`✅ Backed up to Firebase at ${now}:`, data.length, 'items');
+        showSaveIndicator('Backed up to cloud ☁️', '✅');
+        return true;
     } catch (error) {
-        console.error('❌ Gist backup error:', error);
+        console.error('❌ Firebase backup error:', error);
         showSaveIndicator('No internet — saved locally', '📵');
         return false;
     }
 }
 
-// Load data from GitHub Gist (used on first load if localStorage is empty)
-async function restoreFromGist() {
-    if (!isGistConfigured()) return null;
-
+// Load data from Firebase (used on first load if localStorage is empty)
+async function restoreFromFirebase() {
     try {
-        const response = await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
-        });
+        const docRef = doc(db, 'movies', 'data');
+        const docSnap = await getDoc(docRef);
 
-        if (!response.ok) {
-            console.warn('⚠️ Could not reach Gist:', response.status);
-            return null;
+        if (docSnap.exists()) {
+            const data = docSnap.data().movies;
+            if (Array.isArray(data) && data.length > 0) {
+                console.log('✅ Restored from Firebase:', data.length, 'items');
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return data;
+            }
         }
 
-        const gist = await response.json();
-        const file = gist.files?.[GIST_FILE];
-
-        if (!file?.content) {
-            console.warn('⚠️ Gist file is empty or missing');
-            return null;
-        }
-
-        const data = JSON.parse(file.content);
-        if (Array.isArray(data) && data.length > 0) {
-            console.log('✅ Restored from Gist:', data.length, 'items');
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            return data;
-        }
-
+        console.warn('⚠️ No data found in Firebase');
         return null;
     } catch (error) {
-        console.error('❌ Gist restore error:', error);
+        console.error('❌ Firebase restore error:', error);
         return null;
     }
 }
 
 // Schedule a backup — waits AUTO_BACKUP_INTERVAL seconds after last save
-// (prevents hammering the API on every keystroke)
 function scheduleBackup(data) {
     _pendingBackup = true;
 
@@ -159,13 +128,13 @@ function scheduleBackup(data) {
     _backupTimer = setTimeout(() => {
         if (_pendingBackup) {
             _pendingBackup = false;
-            backupToGist(data);
+            backupToFirebase(data);
         }
     }, AUTO_BACKUP_INTERVAL * 1000);
 }
 
 // ──────────────────────────────────────────────
-// ENHANCED LOAD — tries localStorage, then Gist
+// ENHANCED LOAD — tries localStorage, then Firebase
 // ──────────────────────────────────────────────
 
 async function loadDataWithCloudRestore() {
@@ -173,14 +142,12 @@ async function loadDataWithCloudRestore() {
     const local = loadData();
     if (local !== null) return local;
 
-    // 2. localStorage is empty → try restoring from Gist
-    if (isGistConfigured()) {
-        showSaveIndicator('Restoring from cloud…', '☁️');
-        const cloud = await restoreFromGist();
-        if (cloud) {
-            showSaveIndicator('Restored from cloud!', '✅');
-            return cloud;
-        }
+    // 2. localStorage is empty → try restoring from Firebase
+    showSaveIndicator('Restoring from cloud…', '☁️');
+    const cloud = await restoreFromFirebase();
+    if (cloud) {
+        showSaveIndicator('Restored from cloud!', '✅');
+        return cloud;
     }
 
     return null;
@@ -197,7 +164,7 @@ function manualBackupNow() {
         return;
     }
     const data = JSON.parse(raw);
-    backupToGist(data);
+    backupToFirebase(data);
 }
 
 // Expose for inline onclick use
