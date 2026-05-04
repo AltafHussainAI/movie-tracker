@@ -2,7 +2,7 @@
 // DATA MANAGER - WITH GITHUB GIST AUTO-BACKUP
 // =============================================
 
-const GITHUB_TOKEN = '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';
+const GITHUB_TOKEN = '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';
 const GIST_ID      = '28384e87e0185be5e8e8a663c106c11b';
 const GIST_FILE    = 'movie-data.json';
 const STORAGE_KEY  = 'movieTrackerData';
