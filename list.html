@@ -541,7 +541,7 @@ function loadGroups(){
 function saveGroups(){
     localStorage.setItem('movieGroups',JSON.stringify(customGroups));
     if(typeof saveGroupsToFirebase === 'function') saveGroupsToFirebase();
-}    applyGroupOrder();
+    applyGroupOrder();
     saveMovieData();
 }
 function applyGroupOrder(){
