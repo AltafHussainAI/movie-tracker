@@ -11,7 +11,8 @@ const firebaseConfig = {
     appId: "1:984184348188:web:2b3f5804052adcb77889d9"
 };
 
-const STORAGE_KEY = 'movieTrackerData';
+const STORAGE_KEY  = 'movieTrackerData';
+const GROUPS_KEY   = 'movieGroups';
 const AUTO_BACKUP_INTERVAL = 30;
 
 let _backupTimer = null;
@@ -68,6 +69,7 @@ function saveData(data) {
 function clearAllData() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(STORAGE_KEY + '_time');
+    localStorage.removeItem(GROUPS_KEY);
     console.log('✅ Cleared all data from localStorage');
 }
 
@@ -83,14 +85,18 @@ async function backupToFirebase(data) {
         const db = initFirebase();
         if (!db) throw new Error('Firebase not ready');
         const now = new Date().toISOString();
+        // Read groups from localStorage to include in backup
+        let groups = [];
+        try { groups = JSON.parse(localStorage.getItem(GROUPS_KEY) || '[]'); } catch(e) {}
         await db.collection('movies').doc('data').set({
             movies: data,
+            groups: groups,
             updatedAt: now
         });
         // Keep local timestamp in sync with what we just saved
         localStorage.setItem(STORAGE_KEY + '_time', new Date(now).getTime().toString());
         const timeStr = new Date().toLocaleTimeString();
-        console.log('✅ Backed up to Firebase at ' + timeStr + ':', data.length, 'items');
+        console.log('✅ Backed up to Firebase at ' + timeStr + ':', data.length, 'items,', groups.length, 'groups');
         showSaveIndicator('Backed up to cloud ☁️', '✅');
         return true;
     } catch (error) {
@@ -107,9 +113,11 @@ async function restoreFromFirebase() {
         const docSnap = await db.collection('movies').doc('data').get();
         if (docSnap.exists) {
             const data = docSnap.data().movies;
+            const groups = docSnap.data().groups || [];
             if (Array.isArray(data) && data.length > 0) {
-                console.log('✅ Restored from Firebase:', data.length, 'items');
+                console.log('✅ Restored from Firebase:', data.length, 'items,', groups.length, 'groups');
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                localStorage.setItem(GROUPS_KEY, JSON.stringify(groups));
                 return data;
             }
         }
@@ -143,8 +151,9 @@ async function loadDataWithCloudRestore() {
         const docSnap = await db.collection('movies').doc('data').get();
 
         if (docSnap.exists) {
-            const firebaseData = docSnap.data().movies;
-            const firebaseTime = new Date(docSnap.data().updatedAt || 0).getTime();
+            const firebaseData   = docSnap.data().movies;
+            const firebaseGroups = docSnap.data().groups || [];
+            const firebaseTime   = new Date(docSnap.data().updatedAt || 0).getTime();
 
             const localRaw   = localStorage.getItem(STORAGE_KEY);
             const localData  = localRaw ? JSON.parse(localRaw) : null;
@@ -154,9 +163,10 @@ async function loadDataWithCloudRestore() {
             if (Array.isArray(firebaseData) && firebaseData.length > 0) {
                 if (firebaseTime >= localTime) {
                     // Firebase is newer — use it on ALL devices
-                    console.log('✅ Firebase data is newer (' + firebaseData.length + ' items) — using it');
+                    console.log('✅ Firebase data is newer (' + firebaseData.length + ' items, ' + firebaseGroups.length + ' groups) — using it');
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(firebaseData));
                     localStorage.setItem(STORAGE_KEY + '_time', firebaseTime.toString());
+                    localStorage.setItem(GROUPS_KEY, JSON.stringify(firebaseGroups));
                     showSaveIndicator('Synced from cloud ✅', '☁️');
                     return firebaseData;
                 } else {
@@ -188,4 +198,15 @@ function manualBackupNow() {
     backupToFirebase(data);
 }
 
-window.manualBackupNow = manualBackupNow;
+// Called by list.html whenever groups change — schedules a Firebase backup
+// that bundles both movies + the updated groups together.
+function saveGroupsToFirebase() {
+    const rawMovies = localStorage.getItem(STORAGE_KEY);
+    if (!rawMovies) return;
+    const data = JSON.parse(rawMovies);
+    // Use scheduleBackup so it debounces rapidly-fired group changes
+    scheduleBackup(data);
+}
+
+window.manualBackupNow    = manualBackupNow;
+window.saveGroupsToFirebase = saveGroupsToFirebase;

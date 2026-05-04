@@ -540,7 +540,8 @@ function loadGroups(){
 }
 function saveGroups(){
     localStorage.setItem('movieGroups',JSON.stringify(customGroups));
-    applyGroupOrder();
+    if(typeof saveGroupsToFirebase === 'function') saveGroupsToFirebase();
+}    applyGroupOrder();
     saveMovieData();
 }
 function applyGroupOrder(){
@@ -566,7 +567,11 @@ function applyGroupOrder(){
 // PAGE INIT
 // ══════════════════════════════════════════════════════════════════════
 loadGroups();
-function updatePageSpecificContent(){ applyFilters(); }
+function updatePageSpecificContent(){
+    // Re-read groups from localStorage in case cloud sync has updated them
+    loadGroups();
+    applyFilters();
+}
 
 // ══════════════════════════════════════════════════════════════════════
 // TABLE TOGGLE
@@ -1382,7 +1387,7 @@ function applyPicker(gId){
 document.addEventListener('keydown',e=>{
     if(e.key==='Escape'){ closeEditModal(); closeGroupEditModal(); if(activeGroupId) closePicker(); }
 });
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadGroups(); refreshData(); } });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadGroups(); renderGroupsList(); refreshData(); } });
 </script>
 </body>
 </html>
