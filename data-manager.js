@@ -54,6 +54,8 @@ function loadData() {
 function saveData(data) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        // Save current timestamp so we can compare with Firebase later
+        localStorage.setItem(STORAGE_KEY + '_time', Date.now().toString());
         console.log('✅ Saved to localStorage:', data.length, 'items');
         scheduleBackup(data);
         return true;
@@ -65,6 +67,7 @@ function saveData(data) {
 
 function clearAllData() {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY + '_time');
     console.log('✅ Cleared all data from localStorage');
 }
 
@@ -79,12 +82,15 @@ async function backupToFirebase(data) {
     try {
         const db = initFirebase();
         if (!db) throw new Error('Firebase not ready');
+        const now = new Date().toISOString();
         await db.collection('movies').doc('data').set({
             movies: data,
-            updatedAt: new Date().toISOString()
+            updatedAt: now
         });
-        const now = new Date().toLocaleTimeString();
-        console.log('✅ Backed up to Firebase at ' + now + ':', data.length, 'items');
+        // Keep local timestamp in sync with what we just saved
+        localStorage.setItem(STORAGE_KEY + '_time', new Date(now).getTime().toString());
+        const timeStr = new Date().toLocaleTimeString();
+        console.log('✅ Backed up to Firebase at ' + timeStr + ':', data.length, 'items');
         showSaveIndicator('Backed up to cloud ☁️', '✅');
         return true;
     } catch (error) {
@@ -126,16 +132,48 @@ function scheduleBackup(data) {
     }, AUTO_BACKUP_INTERVAL * 1000);
 }
 
+// ── FIXED: Always sync from Firebase on load, pick the newest data ──
 async function loadDataWithCloudRestore() {
+    showSaveIndicator('Syncing from cloud…', '☁️');
+
+    try {
+        const db = initFirebase();
+        if (!db) throw new Error('Firebase not ready');
+
+        const docSnap = await db.collection('movies').doc('data').get();
+
+        if (docSnap.exists) {
+            const firebaseData = docSnap.data().movies;
+            const firebaseTime = new Date(docSnap.data().updatedAt || 0).getTime();
+
+            const localRaw   = localStorage.getItem(STORAGE_KEY);
+            const localData  = localRaw ? JSON.parse(localRaw) : null;
+            const localStamp = localStorage.getItem(STORAGE_KEY + '_time');
+            const localTime  = localStamp ? parseInt(localStamp) : 0;
+
+            if (Array.isArray(firebaseData) && firebaseData.length > 0) {
+                if (firebaseTime >= localTime) {
+                    // Firebase is newer — use it on ALL devices
+                    console.log('✅ Firebase data is newer (' + firebaseData.length + ' items) — using it');
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(firebaseData));
+                    localStorage.setItem(STORAGE_KEY + '_time', firebaseTime.toString());
+                    showSaveIndicator('Synced from cloud ✅', '☁️');
+                    return firebaseData;
+                } else {
+                    // Local is newer (just edited on this device)
+                    console.log('✅ Local data is newer (' + localData.length + ' items) — keeping it');
+                    showSaveIndicator('Up to date ✅', '');
+                    return localData;
+                }
+            }
+        }
+    } catch (error) {
+        console.error('❌ Sync error — falling back to local:', error);
+    }
+
+    // Fallback: Firebase unreachable, use localStorage
     const local = loadData();
     if (local !== null) return local;
-
-    showSaveIndicator('Restoring from cloud…', '☁️');
-    const cloud = await restoreFromFirebase();
-    if (cloud) {
-        showSaveIndicator('Restored from cloud!', '✅');
-        return cloud;
-    }
 
     return null;
 }
