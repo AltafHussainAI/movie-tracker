@@ -1,53 +1,110 @@
 // =============================================
-// DATA MANAGER - WITH FIREBASE AUTO-BACKUP
+// DATA MANAGER - FIREBASE REST API ONLY
+// Works on ANY device / origin (mobile, PC, LAN IP, etc.)
+// No Firebase SDK required — uses Firestore REST + API key only
 // =============================================
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBNirB-k4ASmHIE3Zm6hluxStFh1kwOSII",
-    authDomain: "movie-tracker-a2471.firebaseapp.com",
-    projectId: "movie-tracker-a2471",
-    storageBucket: "movie-tracker-a2471.firebasestorage.app",
-    messagingSenderId: "984184348188",
-    appId: "1:984184348188:web:2b3f5804052adcb77889d9"
+    apiKey:    "AIzaSyBNirB-k4ASmHIE3Zm6hluxStFh1kwOSII",
+    projectId: "movie-tracker-a2471"
 };
 
-const STORAGE_KEY  = 'movieTrackerData';
-const GROUPS_KEY   = 'movieGroups';
-const AUTO_BACKUP_INTERVAL = 30;
+const STORAGE_KEY          = 'movieTrackerData';
+const GROUPS_KEY           = 'movieGroups';
+const AUTO_BACKUP_INTERVAL = 30;   // seconds before a pending backup fires
+const POLL_INTERVAL        = 30;   // seconds between background sync checks
 
-let _backupTimer = null;
+const FIRESTORE_DOC =
+    `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}` +
+    `/databases/(default)/documents/movies/data?key=${firebaseConfig.apiKey}`;
+
+let _backupTimer   = null;
 let _pendingBackup = false;
-let _db = null;
+let _pollTimer     = null;
 
-function initFirebase() {
-    if (_db) return _db;
-    try {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+// ─────────────────────────────────────────────
+//  Firestore value encoders / decoders
+// ─────────────────────────────────────────────
+function _encodeValue(v) {
+    if (v === null || v === undefined) return { nullValue: null };
+    if (typeof v === 'boolean')        return { booleanValue: v };
+    if (typeof v === 'number')         return Number.isInteger(v)
+                                           ? { integerValue: String(v) }
+                                           : { doubleValue: v };
+    if (typeof v === 'string')         return { stringValue: v };
+    if (Array.isArray(v))              return { arrayValue: { values: v.map(_encodeValue) } };
+    if (typeof v === 'object')         return {
+        mapValue: {
+            fields: Object.fromEntries(
+                Object.entries(v).map(([k, val]) => [k, _encodeValue(val)])
+            )
         }
-        _db = firebase.firestore();
-        console.log('✅ Firebase initialized');
-        return _db;
-    } catch (e) {
-        console.error('❌ Firebase init error:', e);
-        return null;
-    }
+    };
+    return { stringValue: String(v) };
 }
 
+function _decodeValue(v) {
+    if ('nullValue'    in v) return null;
+    if ('booleanValue' in v) return v.booleanValue;
+    if ('integerValue' in v) return Number(v.integerValue);
+    if ('doubleValue'  in v) return Number(v.doubleValue);
+    if ('stringValue'  in v) return v.stringValue;
+    if ('arrayValue'   in v) return (v.arrayValue.values || []).map(_decodeValue);
+    if ('mapValue'     in v) return Object.fromEntries(
+        Object.entries(v.mapValue.fields || {}).map(([k, val]) => [k, _decodeValue(val)])
+    );
+    return null;
+}
+
+// ─────────────────────────────────────────────
+//  Core REST calls
+// ─────────────────────────────────────────────
+async function _firestoreGet() {
+    const res = await fetch(FIRESTORE_DOC);
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error('GET failed: ' + res.status + ' ' + await res.text());
+    const json = await res.json();
+    if (!json.fields) return null;
+    return {
+        movies:    _decodeValue(json.fields.movies    || { arrayValue: {} }),
+        groups:    _decodeValue(json.fields.groups    || { arrayValue: {} }),
+        updatedAt: json.fields.updatedAt ? json.fields.updatedAt.stringValue : null
+    };
+}
+
+async function _firestorePatch(movies, groups, now) {
+    const body = {
+        fields: {
+            movies:    _encodeValue(movies),
+            groups:    _encodeValue(groups),
+            updatedAt: _encodeValue(now)
+        }
+    };
+    const res = await fetch(FIRESTORE_DOC, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('PATCH failed: ' + res.status + ' ' + await res.text());
+    return true;
+}
+
+// ─────────────────────────────────────────────
+//  localStorage helpers
+// ─────────────────────────────────────────────
 function loadData() {
     try {
-        const localData = localStorage.getItem(STORAGE_KEY);
-        if (localData) {
-            const parsed = JSON.parse(localData);
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) {
                 console.log('✅ Loaded from localStorage:', parsed.length, 'items');
                 return parsed;
             }
         }
-        console.log('No data in localStorage — will try Firebase');
         return null;
-    } catch (error) {
-        console.error('Error loading local data:', error);
+    } catch (e) {
+        console.error('Error reading localStorage:', e);
         return null;
     }
 }
@@ -55,13 +112,12 @@ function loadData() {
 function saveData(data) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        // Save current timestamp so we can compare with Firebase later
         localStorage.setItem(STORAGE_KEY + '_time', Date.now().toString());
         console.log('✅ Saved to localStorage:', data.length, 'items');
         scheduleBackup(data);
         return true;
-    } catch (error) {
-        console.error('Error saving to localStorage:', error);
+    } catch (e) {
+        console.error('Error writing localStorage:', e);
         return false;
     }
 }
@@ -70,7 +126,7 @@ function clearAllData() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(STORAGE_KEY + '_time');
     localStorage.removeItem(GROUPS_KEY);
-    console.log('✅ Cleared all data from localStorage');
+    console.log('✅ Cleared all local data');
 }
 
 function formatDuration(minutes) {
@@ -80,145 +136,51 @@ function formatDuration(minutes) {
     return `${hrs}h ${mins}m`;
 }
 
-// ── REST API helpers (work on ANY origin, including mobile LAN access) ──
-const FIRESTORE_REST_BASE =
-    `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents`;
-
-async function backupViaRest(data, groups, now) {
-    const url = `${FIRESTORE_REST_BASE}/movies/data?key=${firebaseConfig.apiKey}`;
-    const toStrVal  = s  => ({ stringValue:  s  });
-    const toIntVal  = n  => ({ integerValue: String(n) });
-
-    // Encode movies array
-    const encodeMovie = m => ({
-        mapValue: {
-            fields: Object.fromEntries(
-                Object.entries(m).map(([k, v]) => {
-                    if (typeof v === 'number') return [k, toIntVal(v)];
-                    if (typeof v === 'boolean') return [k, { booleanValue: v }];
-                    if (v === null || v === undefined) return [k, { nullValue: null }];
-                    return [k, toStrVal(String(v))];
-                })
-            )
-        }
-    });
-
-    const body = {
-        fields: {
-            movies:    { arrayValue: { values: data.map(encodeMovie) } },
-            groups:    { arrayValue: { values: groups.map(g => toStrVal(typeof g === 'string' ? g : JSON.stringify(g))) } },
-            updatedAt: toStrVal(now)
-        }
-    };
-
-    const res = await fetch(url, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-    });
-    if (!res.ok) {
-        const err = await res.text();
-        throw new Error('REST backup failed: ' + err);
-    }
-    return true;
-}
-
-async function restoreViaRest() {
-    const url = `${FIRESTORE_REST_BASE}/movies/data?key=${firebaseConfig.apiKey}`;
-    const res  = await fetch(url);
-    if (!res.ok) throw new Error('REST restore failed: ' + res.status);
-    const json = await res.json();
-    if (!json.fields) return null;
-
-    const decodeValue = v => {
-        if ('stringValue'  in v) return v.stringValue;
-        if ('integerValue' in v) return Number(v.integerValue);
-        if ('doubleValue'  in v) return Number(v.doubleValue);
-        if ('booleanValue' in v) return v.booleanValue;
-        if ('nullValue'    in v) return null;
-        if ('mapValue'     in v) return Object.fromEntries(
-            Object.entries(v.mapValue.fields || {}).map(([k, val]) => [k, decodeValue(val)])
-        );
-        if ('arrayValue'   in v) return (v.arrayValue.values || []).map(decodeValue);
-        return null;
-    };
-
-    const movies = decodeValue(json.fields.movies);
-    const groups = json.fields.groups ? decodeValue(json.fields.groups) : [];
-    const updatedAt = json.fields.updatedAt ? json.fields.updatedAt.stringValue : null;
-    return { movies, groups, updatedAt };
-}
-
+// ─────────────────────────────────────────────
+//  Backup to Firebase
+// ─────────────────────────────────────────────
 async function backupToFirebase(data) {
     const now = new Date().toISOString();
     let groups = [];
     try { groups = JSON.parse(localStorage.getItem(GROUPS_KEY) || '[]'); } catch(e) {}
 
-    // Try SDK first, fall back to REST (works on all origins/devices)
-    let success = false;
     try {
-        const db = initFirebase();
-        if (!db) throw new Error('SDK not ready');
-        await db.collection('movies').doc('data').set({ movies: data, groups, updatedAt: now });
-        success = true;
-        console.log('✅ Backed up via SDK');
-    } catch (sdkErr) {
-        console.warn('⚠️ SDK backup failed, trying REST API…', sdkErr.message);
-        try {
-            await backupViaRest(data, groups, now);
-            success = true;
-            console.log('✅ Backed up via REST API');
-        } catch (restErr) {
-            console.error('❌ REST backup also failed:', restErr.message);
-        }
-    }
-
-    if (success) {
+        await _firestorePatch(data, groups, now);
         localStorage.setItem(STORAGE_KEY + '_time', new Date(now).getTime().toString());
-        const timeStr = new Date().toLocaleTimeString();
-        console.log('✅ Backed up to Firebase at ' + timeStr + ':', data.length, 'items,', groups.length, 'groups');
-        showSaveIndicator('Backed up to cloud ☁️', '✅');
+        console.log('✅ Backed up to Firebase at', new Date().toLocaleTimeString(),
+                    '-', data.length, 'items,', groups.length, 'groups');
+        showSaveIndicator('Backed up to cloud', '✅');
         return true;
-    } else {
+    } catch (err) {
+        console.error('❌ Firebase backup error:', err.message);
         showSaveIndicator('No internet — saved locally', '📵');
         return false;
     }
 }
 
+// ─────────────────────────────────────────────
+//  Restore from Firebase
+// ─────────────────────────────────────────────
 async function restoreFromFirebase() {
-    // Try SDK first, fall back to REST API (works on all origins/devices)
     try {
-        const db = initFirebase();
-        if (!db) throw new Error('SDK not ready');
-        const docSnap = await db.collection('movies').doc('data').get();
-        if (docSnap.exists) {
-            const data   = docSnap.data().movies;
-            const groups = docSnap.data().groups || [];
-            if (Array.isArray(data) && data.length > 0) {
-                console.log('✅ Restored from Firebase (SDK):', data.length, 'items');
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                localStorage.setItem(GROUPS_KEY, JSON.stringify(groups));
-                return data;
-            }
+        const result = await _firestoreGet();
+        if (result && Array.isArray(result.movies) && result.movies.length > 0) {
+            console.log('✅ Restored from Firebase:', result.movies.length, 'items');
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(result.movies));
+            localStorage.setItem(GROUPS_KEY,  JSON.stringify(result.groups));
+            return result.movies;
         }
-    } catch (sdkErr) {
-        console.warn('⚠️ SDK restore failed, trying REST API...', sdkErr.message);
-        try {
-            const result = await restoreViaRest();
-            if (result && Array.isArray(result.movies) && result.movies.length > 0) {
-                console.log('✅ Restored from Firebase (REST):', result.movies.length, 'items');
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(result.movies));
-                localStorage.setItem(GROUPS_KEY, JSON.stringify(result.groups));
-                return result.movies;
-            }
-        } catch (restErr) {
-            console.error('❌ REST restore also failed:', restErr.message);
-        }
+        console.warn('No data found in Firebase');
+        return null;
+    } catch (err) {
+        console.error('❌ Firebase restore error:', err.message);
+        return null;
     }
-    console.warn('⚠️ No data found in Firebase');
-    return null;
 }
 
+// ─────────────────────────────────────────────
+//  Debounced backup scheduler
+// ─────────────────────────────────────────────
 function scheduleBackup(data) {
     _pendingBackup = true;
     if (_backupTimer) clearTimeout(_backupTimer);
@@ -230,10 +192,10 @@ function scheduleBackup(data) {
     }, AUTO_BACKUP_INTERVAL * 1000);
 }
 
-// ── Always sync from Firebase on load, pick the newest data ──
-// Uses SDK first; falls back to Firestore REST API so it works on
-// mobile / LAN access (e.g. http://192.168.x.x:8000) where the SDK
-// may be blocked due to Firebase authorized-domain restrictions.
+// ─────────────────────────────────────────────
+//  Initial load — pull from Firebase,
+//  keep whichever copy is newer
+// ─────────────────────────────────────────────
 async function loadDataWithCloudRestore() {
     showSaveIndicator('Syncing from cloud…', '☁️');
 
@@ -242,81 +204,83 @@ async function loadDataWithCloudRestore() {
     const localStamp = localStorage.getItem(STORAGE_KEY + '_time');
     const localTime  = localStamp ? parseInt(localStamp) : 0;
 
-    let firebaseData   = null;
-    let firebaseGroups = [];
-    let firebaseTime   = 0;
-
-    // 1️⃣ Try Firebase SDK
     try {
-        const db = initFirebase();
-        if (!db) throw new Error('SDK not ready');
-        const docSnap = await db.collection('movies').doc('data').get();
-        if (docSnap.exists) {
-            firebaseData   = docSnap.data().movies;
-            firebaseGroups = docSnap.data().groups || [];
-            firebaseTime   = new Date(docSnap.data().updatedAt || 0).getTime();
-            console.log('✅ Fetched from Firebase via SDK');
-        }
-    } catch (sdkErr) {
-        console.warn('⚠️ SDK fetch failed (likely unauthorized domain on mobile) — trying REST API...', sdkErr.message);
-        // 2️⃣ Fall back to Firestore REST API — no domain restrictions
-        try {
-            const result = await restoreViaRest();
-            if (result) {
-                firebaseData   = result.movies;
-                firebaseGroups = result.groups || [];
-                firebaseTime   = result.updatedAt ? new Date(result.updatedAt).getTime() : 0;
-                console.log('✅ Fetched from Firebase via REST API');
+        const result = await _firestoreGet();
+
+        if (result && Array.isArray(result.movies) && result.movies.length > 0) {
+            const firebaseTime = result.updatedAt ? new Date(result.updatedAt).getTime() : 0;
+
+            if (firebaseTime >= localTime) {
+                console.log('✅ Firebase is newer (' + result.movies.length + ' items) — using it');
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(result.movies));
+                localStorage.setItem(STORAGE_KEY + '_time', firebaseTime.toString());
+                localStorage.setItem(GROUPS_KEY,  JSON.stringify(result.groups));
+                showSaveIndicator('Synced from cloud ✅', '☁️');
+                return result.movies;
+            } else {
+                console.log('✅ Local is newer (' + localData.length + ' items) — keeping it');
+                showSaveIndicator('Up to date ✅', '');
+                return localData;
             }
-        } catch (restErr) {
-            console.error('❌ REST API fetch also failed:', restErr.message);
         }
+    } catch (err) {
+        console.error('❌ Sync error — falling back to local:', err.message);
+        showSaveIndicator('Offline — using local data 📵', '');
     }
 
-    // 3️⃣ Pick the newest source
-    if (Array.isArray(firebaseData) && firebaseData.length > 0) {
-        if (firebaseTime >= localTime) {
-            console.log('✅ Firebase data is newer (' + firebaseData.length + ' items) — using it');
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(firebaseData));
-            localStorage.setItem(STORAGE_KEY + '_time', firebaseTime.toString());
-            localStorage.setItem(GROUPS_KEY, JSON.stringify(firebaseGroups));
-            showSaveIndicator('Synced from cloud ✅', '☁️');
-            return firebaseData;
-        } else {
-            console.log('✅ Local data is newer (' + localData.length + ' items) — keeping it');
-            showSaveIndicator('Up to date ✅', '');
-            return localData;
-        }
-    }
-
-    // 4️⃣ Firebase unreachable — use localStorage
-    console.warn('⚠️ Could not reach Firebase — using local data');
-    showSaveIndicator('Offline — using local data 📵', '');
-    const local = loadData();
-    if (local !== null) return local;
-
-    return null;
+    return loadData();
 }
 
+// ─────────────────────────────────────────────
+//  Background polling — keeps open tabs in sync
+//  when another device makes changes
+// ─────────────────────────────────────────────
+function startPolling() {
+    if (_pollTimer) return;
+    _pollTimer = setInterval(async () => {
+        if (_pendingBackup) return;
+
+        const localStamp = localStorage.getItem(STORAGE_KEY + '_time');
+        const localTime  = localStamp ? parseInt(localStamp) : 0;
+
+        try {
+            const result = await _firestoreGet();
+            if (!result || !Array.isArray(result.movies) || result.movies.length === 0) return;
+
+            const firebaseTime = result.updatedAt ? new Date(result.updatedAt).getTime() : 0;
+            if (firebaseTime > localTime) {
+                console.log('🔄 Poll: newer data found — updating');
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(result.movies));
+                localStorage.setItem(STORAGE_KEY + '_time', firebaseTime.toString());
+                localStorage.setItem(GROUPS_KEY,  JSON.stringify(result.groups));
+                showSaveIndicator('Updated from cloud 🔄', '☁️');
+
+                if (typeof window._onFirebaseUpdate === 'function') {
+                    window._onFirebaseUpdate(result.movies, result.groups);
+                }
+            }
+        } catch (e) { /* silent — network blip */ }
+    }, POLL_INTERVAL * 1000);
+
+    console.log('✅ Background sync started (every ' + POLL_INTERVAL + 's)');
+}
+
+startPolling();
+
+// ─────────────────────────────────────────────
+//  Public helpers
+// ─────────────────────────────────────────────
 function manualBackupNow() {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-        showSaveIndicator('No data to backup', '❓');
-        return;
-    }
-    const data = JSON.parse(raw);
-    backupToFirebase(data);
+    if (!raw) { showSaveIndicator('No data to backup', '❓'); return; }
+    backupToFirebase(JSON.parse(raw));
 }
 
-// Called by list.html whenever groups change — schedules a Firebase backup
-// that bundles both movies + the updated groups together.
 function saveGroupsToFirebase() {
-    const rawMovies = localStorage.getItem(STORAGE_KEY);
-    if (!rawMovies) return;
-    const data = JSON.parse(rawMovies);
-    // Use scheduleBackup so it debounces rapidly-fired group changes
-    scheduleBackup(data);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    scheduleBackup(JSON.parse(raw));
 }
 
-window.manualBackupNow    = manualBackupNow;
-window.saveGroupsToFirebase = saveGroupsToFirebase;
+window.manualBackupNow      = manualBackupNow;
+window.saveGroupsToFirebase  = saveGroupsToFirebase;
