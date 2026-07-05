@@ -68,6 +68,12 @@
         }
         .group-drag-handle:hover { color:#94a3b8; }
 
+        .group-focus-back {
+            font-size:1.15em; color:#94a3b8; cursor:pointer; padding:2px 8px;
+            border-radius:7px; transition:background .15s,color .15s; flex-shrink:0; user-select:none;
+        }
+        .group-focus-back:hover { background:#1a2130; color:#ffd700; }
+
         /* ── Card body ── */
         .gc-body { padding:18px 20px; border-top:1px solid #1c242d; display:none; }
         .gc-body.open { display:block; }
@@ -493,6 +499,7 @@ const PALETTE = ['#ffd700','#ff6b6b','#4ade80','#60a5fa','#f472b6','#fb923c','#a
 
 let customGroups   = [];
 let activeGroupId  = null;
+let focusedGroupId = null; // group currently shown in single-group focus view (All Entries page)
 let pickerSelected = [];
 let currentEditIndex = -1;
 let tableVisible   = false;
@@ -799,12 +806,18 @@ function createNewGroup(){
 // ══════════════════════════════════════════════════════════════════════
 // TOGGLE GROUP BODY
 // ══════════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════════
+// TOGGLE GROUP FOCUS (hide all other groups, show just this one)
+// ══════════════════════════════════════════════════════════════════════
 function toggleGBody(id){
-    if(openBodies.has(id)){
-        openBodies.delete(id);
+    if(focusedGroupId===id){
+        // Clicked the already-focused group again — go back to the full list
+        focusedGroupId=null;
         if(activeGroupId===id){ activeGroupId=null; pickerSelected=[]; }
     } else {
+        focusedGroupId=id;
         openBodies.add(id);
+        if(activeGroupId && activeGroupId!==id){ activeGroupId=null; pickerSelected=[]; }
     }
     renderGroupsList();
 }
@@ -815,6 +828,7 @@ function toggleGBody(id){
 function toggleGroupSelMode(){
     groupSelMode=!groupSelMode;
     groupSelected.clear();
+    if(groupSelMode) focusedGroupId=null; // need all groups visible to multi-select them
     const btn=document.getElementById('groupSelModeBtn');
     const bar=document.getElementById('groupBatchBar');
     if(groupSelMode){
@@ -1141,6 +1155,145 @@ function sortGroupMembers(gId,sortBy){
 // ══════════════════════════════════════════════════════════════════════
 // RENDER GROUPS LIST
 // ══════════════════════════════════════════════════════════════════════
+// Builds the member-list HTML for a single group's body (batch toolbar +
+// sort controls + column header + draggable rows). Shared by both the
+// normal multi-card view and the single-group focus view.
+function buildGroupBodyContent(g){
+    const mc=g.memberKeys.length;
+    if(mc===0){
+        return `<div class="gc-empty"><div class="eico">🎬</div>No entries assigned yet — click <b style="color:${g.color};">Assign</b> to add some.</div>`;
+    }
+
+    const gis      = getGIS(g.id);
+    const inItemSel= gis.mode;
+    const sel      = gis.selected;
+    const selCount = sel.size;
+
+    // Item-level batch toolbar
+    const itemBatchBar=inItemSel?`<div class="batch-toolbar">
+        <span class="bt-label">Selected:</span>
+        <span class="bt-count" style="background:${g.color}22;color:${g.color};border:1px solid ${g.color}44;">${selCount}</span>
+        <button class="bbtn selall" onclick="selectAllItems('${g.id}')">☑ All</button>
+        <button class="bbtn desel"  onclick="deselectAllItems('${g.id}')">☐ None</button>
+        <button class="bbtn top"  onclick="batchMoveItems('${g.id}','top')"    ${selCount===0?'disabled':''}>⏫ Top</button>
+        <button class="bbtn up"   onclick="batchMoveItems('${g.id}','up')"     ${selCount===0?'disabled':''}>▲ Up</button>
+        <button class="bbtn down" onclick="batchMoveItems('${g.id}','down')"   ${selCount===0?'disabled':''}>▼ Down</button>
+        <button class="bbtn bot"  onclick="batchMoveItems('${g.id}','bottom')" ${selCount===0?'disabled':''}>⏬ Bottom</button>
+        <button class="bbtn del"  onclick="batchDeleteItems('${g.id}')"        ${selCount===0?'disabled':''}>🗑 Remove</button>
+        <span class="bt-label" style="margin-left:2px;">Go to #:</span>
+        <input type="number" id="posinput_${g.id}" min="1" max="${mc}" placeholder="pos"
+            ${selCount===0?'disabled':''}
+            style="width:56px;background:#0d1117;border:1.5px solid #21282f;border-radius:8px;padding:5px 6px;color:#e2e8f0;font-size:0.78em;text-align:center;outline:none;"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();goToPositionFromInput('${g.id}');}">
+        <button class="bbtn" style="color:#ffd700;border-color:#ffd70044;" onclick="goToPositionFromInput('${g.id}')" ${selCount===0?'disabled':''}>🎯 Go</button>
+        <div style="flex:1;"></div>
+        <button class="bbtn exit" onclick="exitItemSelMode('${g.id}')">✕ Exit</button>
+    </div>`:'';
+
+    // Sort controls + select-items toggle
+    const controls=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;padding:0 2px;">
+        <span style="color:#3d4a5a;font-size:0.68em;font-weight:800;text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
+        <select class="sort-group-select" style="--gc:${g.color};" onchange="sortGroupMembers('${g.id}',this.value);this.value=''">
+            <option value="">Manual / drag</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="name-desc">Name Z–A</option>
+            <option value="year-asc">Year Old–New</option>
+            <option value="year-desc">Year New–Old</option>
+            <option value="duration-asc">Duration Low–High</option>
+            <option value="duration-desc">Duration High–Low</option>
+        </select>
+        <button class="sel-toggle-btn ${inItemSel?'active':''}" onclick="event.stopPropagation();toggleItemSelMode('${g.id}')">
+            ${inItemSel?'✕ Exit Select':'☑ Select Items'}
+        </button>
+    </div>`;
+
+    // Column header — show/hide checkbox column based on mode
+    const hdrChk=inItemSel?`<span class="mh-chk"></span>`:'';
+    const headerRow=`<div class="mlist-header" style="padding-left:${inItemSel?'4px':'44px'};">
+        ${hdrChk}
+        <span class="mh-title">Title</span>
+        <span class="mh-year">Year</span>
+        <span class="mh-dur">Duration</span>
+        <span class="mh-type">Type</span>
+        <span class="mh-act">Act</span>
+    </div>`;
+
+    // Top edge drop zone
+    let rowsHTML=`<div class="drop-edge" style="--gc:${g.color};"
+        ondragover="handleEdgeDragOver(event)" ondragleave="handleEdgeDragLeave(event)"
+        ondrop="handleEdgeDrop(event,'${g.id}','top')"></div>`;
+
+    g.memberKeys.forEach((k,pos)=>{
+        const real=movieData.find(m=>ikey(m)===ikey(k))||k;
+        const safeKey=ikey(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+        const tclass=real.type==='Movie'?'movie':'tvshow';
+        const isFirst=pos===0, isLast=pos===mc-1;
+        const isChecked=sel.has(ikey(k));
+
+        rowsHTML+=`<div class="mrow ${isChecked?'m-selected':''} ${inItemSel?'sel-mode':''}" style="--gc:${g.color};"
+            draggable="${!inItemSel}"
+            ondragstart="handleDragStart(event,'${g.id}',${pos})"
+            ondragend="handleDragEnd(event)"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event,'${g.id}',${pos})">
+            <div class="mcheck-wrap">
+                <div class="mcheck ${isChecked?'on':''}" style="--gc:${g.color};" onclick="event.stopPropagation();toggleItemCheck('${g.id}','${safeKey}')">
+                    ${isChecked?'✓':''}
+                </div>
+            </div>
+            <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
+            <div class="mnum" style="background:${g.color};">${pos+1}</div>
+            <button class="move-btn" onclick="event.stopPropagation();moveToExtreme('${g.id}',${pos},'top')"    ${isFirst?'disabled':''} title="Move to top">⏫</button>
+            <button class="move-btn" onclick="event.stopPropagation();moveGroupMember('${g.id}',${pos},-1)"      ${isFirst?'disabled':''} title="Move up">▲</button>
+            <button class="move-btn" onclick="event.stopPropagation();moveGroupMember('${g.id}',${pos},1)"       ${isLast?'disabled':''} title="Move down">▼</button>
+            <button class="move-btn" onclick="event.stopPropagation();moveToExtreme('${g.id}',${pos},'bottom')"  ${isLast?'disabled':''} title="Move to bottom">⏬</button>
+            <div class="mtitle" title="${real.name}">${real.name}</div>
+            <div class="mmeta-year">${real.releaseYear}</div>
+            <div class="mmeta-dur">${formatDur(real.duration)}</div>
+            <span class="mmeta-type ${tclass}">${real.type}</span>
+            <button class="mrm" onclick="event.stopPropagation();removeGroupMember('${g.id}','${safeKey}')">✕</button>
+        </div>`;
+    });
+
+    // Bottom edge drop zone
+    rowsHTML+=`<div class="drop-edge" style="--gc:${g.color};"
+        ondragover="handleEdgeDragOver(event)" ondragleave="handleEdgeDragLeave(event)"
+        ondrop="handleEdgeDrop(event,'${g.id}','bottom')"></div>`;
+
+    return itemBatchBar+controls+`<div class="member-list">${headerRow}${rowsHTML}</div>`;
+}
+
+// Builds the "focused" single-group view: just a back arrow + the group's
+// name/pill/actions, and its (scrollable) entries list — everything else
+// is hidden while this is showing.
+function buildFocusedGroupHTML(g){
+    const mc=g.memberKeys.length;
+    const bodyContent=buildGroupBodyContent(g);
+    const pickerSection=(activeGroupId===g.id)?buildPickerHTML(g):'';
+
+    const actionBtns=`<button class="hbtn" style="border-color:#21282f;color:#94a3b8;"
+            onclick="event.stopPropagation();openGroupEditModal('${g.id}')">✏️ Edit</button>
+        <button class="hbtn" style="border-color:${g.color}55;color:${g.color};background:${g.color}12;"
+            onclick="event.stopPropagation();openPicker('${g.id}')">＋ Assign</button>
+        <button class="hbtn" style="border-color:#ff6b6b33;color:#ff6b6b;"
+            onclick="event.stopPropagation();deleteGroup('${g.id}')">🗑</button>`;
+
+    return `<div class="gc is-open" style="--gc:${g.color};">
+        <div class="gc-head" style="cursor:pointer;" onclick="toggleGBody('${g.id}')">
+            <span class="group-focus-back" title="Back to all groups">←</span>
+            <div class="gc-dot" style="background:${g.color};box-shadow:0 0 6px ${g.color}88;"></div>
+            <span class="gc-name">${g.name}</span>
+            <span class="gc-pill" style="color:${g.color};border-color:${g.color}55;background:${g.color}12;">${mc} item${mc!==1?'s':''}</span>
+            ${actionBtns}
+        </div>
+        <div class="gc-body open" style="max-height:460px;overflow-y:auto;">
+            ${bodyContent}
+            ${pickerSection}
+        </div>
+    </div>`;
+}
+
 function renderGroupsList(){
     const el=document.getElementById('groupsList');
     el.className=groupSelMode?'g-sel-mode':'';
@@ -1153,116 +1306,30 @@ function renderGroupsList(){
         return;
     }
 
+    // ── Focus mode: a group was clicked — hide every other group and just
+    // show this one's name + its scrollable entries list. Clicking it
+    // again (via toggleGBody) returns to the full groups list.
+    if(focusedGroupId){
+        const focused=groupById(focusedGroupId);
+        if(focused){
+            el.innerHTML=buildFocusedGroupHTML(focused);
+            if(activeGroupId){
+                const listEl=document.getElementById(`plist_${activeGroupId}`);
+                if(listEl) fillPicker(activeGroupId);
+            }
+            updateGroupBatchBar();
+            return;
+        }
+        focusedGroupId=null; // group no longer exists — fall through to full list
+    }
+
     el.innerHTML=customGroups.map(g=>{
         const isOpen     = openBodies.has(g.id);
         const isActive   = activeGroupId===g.id;
         const mc         = g.memberKeys.length;
         const gIsSelected= groupSelMode&&groupSelected.has(g.id);
-        const gis        = getGIS(g.id);
-        const inItemSel  = gis.mode;
-        const sel        = gis.selected;
-        const selCount   = sel.size;
 
-        // ── Build member body ──────────────────────────────────────
-        let bodyContent='';
-        if(mc===0){
-            bodyContent=`<div class="gc-empty"><div class="eico">🎬</div>No entries assigned yet — click <b style="color:${g.color};">Assign</b> to add some.</div>`;
-        } else {
-            // Item-level batch toolbar
-            const itemBatchBar=inItemSel?`<div class="batch-toolbar">
-                <span class="bt-label">Selected:</span>
-                <span class="bt-count" style="background:${g.color}22;color:${g.color};border:1px solid ${g.color}44;">${selCount}</span>
-                <button class="bbtn selall" onclick="selectAllItems('${g.id}')">☑ All</button>
-                <button class="bbtn desel"  onclick="deselectAllItems('${g.id}')">☐ None</button>
-                <button class="bbtn top"  onclick="batchMoveItems('${g.id}','top')"    ${selCount===0?'disabled':''}>⏫ Top</button>
-                <button class="bbtn up"   onclick="batchMoveItems('${g.id}','up')"     ${selCount===0?'disabled':''}>▲ Up</button>
-                <button class="bbtn down" onclick="batchMoveItems('${g.id}','down')"   ${selCount===0?'disabled':''}>▼ Down</button>
-                <button class="bbtn bot"  onclick="batchMoveItems('${g.id}','bottom')" ${selCount===0?'disabled':''}>⏬ Bottom</button>
-                <button class="bbtn del"  onclick="batchDeleteItems('${g.id}')"        ${selCount===0?'disabled':''}>🗑 Remove</button>
-                <span class="bt-label" style="margin-left:2px;">Go to #:</span>
-                <input type="number" id="posinput_${g.id}" min="1" max="${mc}" placeholder="pos"
-                    ${selCount===0?'disabled':''}
-                    style="width:56px;background:#0d1117;border:1.5px solid #21282f;border-radius:8px;padding:5px 6px;color:#e2e8f0;font-size:0.78em;text-align:center;outline:none;"
-                    onkeydown="if(event.key==='Enter'){event.preventDefault();goToPositionFromInput('${g.id}');}">
-                <button class="bbtn" style="color:#ffd700;border-color:#ffd70044;" onclick="goToPositionFromInput('${g.id}')" ${selCount===0?'disabled':''}>🎯 Go</button>
-                <div style="flex:1;"></div>
-                <button class="bbtn exit" onclick="exitItemSelMode('${g.id}')">✕ Exit</button>
-            </div>`:'';
-
-            // Sort controls + select-items toggle
-            const controls=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;padding:0 2px;">
-                <span style="color:#3d4a5a;font-size:0.68em;font-weight:800;text-transform:uppercase;letter-spacing:.5px;">Sort:</span>
-                <select class="sort-group-select" style="--gc:${g.color};" onchange="sortGroupMembers('${g.id}',this.value);this.value=''">
-                    <option value="">Manual / drag</option>
-                    <option value="name-asc">Name A–Z</option>
-                    <option value="name-desc">Name Z–A</option>
-                    <option value="year-asc">Year Old–New</option>
-                    <option value="year-desc">Year New–Old</option>
-                    <option value="duration-asc">Duration Low–High</option>
-                    <option value="duration-desc">Duration High–Low</option>
-                </select>
-                <button class="sel-toggle-btn ${inItemSel?'active':''}" onclick="event.stopPropagation();toggleItemSelMode('${g.id}')">
-                    ${inItemSel?'✕ Exit Select':'☑ Select Items'}
-                </button>
-            </div>`;
-
-            // Column header — show/hide checkbox column based on mode
-            const hdrChk=inItemSel?`<span class="mh-chk"></span>`:'';
-            const headerRow=`<div class="mlist-header" style="padding-left:${inItemSel?'4px':'44px'};">
-                ${hdrChk}
-                <span class="mh-title">Title</span>
-                <span class="mh-year">Year</span>
-                <span class="mh-dur">Duration</span>
-                <span class="mh-type">Type</span>
-                <span class="mh-act">Act</span>
-            </div>`;
-
-            // Top edge drop zone
-            let rowsHTML=`<div class="drop-edge" style="--gc:${g.color};"
-                ondragover="handleEdgeDragOver(event)" ondragleave="handleEdgeDragLeave(event)"
-                ondrop="handleEdgeDrop(event,'${g.id}','top')"></div>`;
-
-            g.memberKeys.forEach((k,pos)=>{
-                const real=movieData.find(m=>ikey(m)===ikey(k))||k;
-                const safeKey=ikey(k).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-                const tclass=real.type==='Movie'?'movie':'tvshow';
-                const isFirst=pos===0, isLast=pos===mc-1;
-                const isChecked=sel.has(ikey(k));
-
-                rowsHTML+=`<div class="mrow ${isChecked?'m-selected':''} ${inItemSel?'sel-mode':''}" style="--gc:${g.color};"
-                    draggable="${!inItemSel}"
-                    ondragstart="handleDragStart(event,'${g.id}',${pos})"
-                    ondragend="handleDragEnd(event)"
-                    ondragover="handleDragOver(event)"
-                    ondragleave="handleDragLeave(event)"
-                    ondrop="handleDrop(event,'${g.id}',${pos})">
-                    <div class="mcheck-wrap">
-                        <div class="mcheck ${isChecked?'on':''}" style="--gc:${g.color};" onclick="event.stopPropagation();toggleItemCheck('${g.id}','${safeKey}')">
-                            ${isChecked?'✓':''}
-                        </div>
-                    </div>
-                    <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
-                    <div class="mnum" style="background:${g.color};">${pos+1}</div>
-                    <button class="move-btn" onclick="event.stopPropagation();moveToExtreme('${g.id}',${pos},'top')"    ${isFirst?'disabled':''} title="Move to top">⏫</button>
-                    <button class="move-btn" onclick="event.stopPropagation();moveGroupMember('${g.id}',${pos},-1)"      ${isFirst?'disabled':''} title="Move up">▲</button>
-                    <button class="move-btn" onclick="event.stopPropagation();moveGroupMember('${g.id}',${pos},1)"       ${isLast?'disabled':''} title="Move down">▼</button>
-                    <button class="move-btn" onclick="event.stopPropagation();moveToExtreme('${g.id}',${pos},'bottom')"  ${isLast?'disabled':''} title="Move to bottom">⏬</button>
-                    <div class="mtitle" title="${real.name}">${real.name}</div>
-                    <div class="mmeta-year">${real.releaseYear}</div>
-                    <div class="mmeta-dur">${formatDur(real.duration)}</div>
-                    <span class="mmeta-type ${tclass}">${real.type}</span>
-                    <button class="mrm" onclick="event.stopPropagation();removeGroupMember('${g.id}','${safeKey}')">✕</button>
-                </div>`;
-            });
-
-            // Bottom edge drop zone
-            rowsHTML+=`<div class="drop-edge" style="--gc:${g.color};"
-                ondragover="handleEdgeDragOver(event)" ondragleave="handleEdgeDragLeave(event)"
-                ondrop="handleEdgeDrop(event,'${g.id}','bottom')"></div>`;
-
-            bodyContent=itemBatchBar+controls+`<div class="member-list">${headerRow}${rowsHTML}</div>`;
-        }
-
+        const bodyContent=buildGroupBodyContent(g);
         const pickerSection=isActive?buildPickerHTML(g):'';
 
         const actionBtns=`<button class="hbtn" style="border-color:#21282f;color:#94a3b8;"
@@ -1279,7 +1346,7 @@ function renderGroupsList(){
             ondragover="handleGroupDragOver(event)"
             ondragleave="handleGroupDragLeave(event)"
             ondrop="handleGroupDrop(event,'${g.id}')">
-            <div class="gc-head" onclick="${groupSelMode?`toggleGroupCheck('${g.id}',event);`:``}toggleGBody('${g.id}')">
+            <div class="gc-head" onclick="${groupSelMode?`toggleGroupCheck('${g.id}',event)`:`toggleGBody('${g.id}')`}">
                 <div class="g-check-wrap">
                     <div class="g-check ${gIsSelected?'on':''}" style="--gc:${g.color};" onclick="toggleGroupCheck('${g.id}',event)">${gIsSelected?'✓':''}</div>
                 </div>
@@ -1450,7 +1517,7 @@ function applyPicker(gId){
 // MISC
 // ══════════════════════════════════════════════════════════════════════
 document.addEventListener('keydown',e=>{
-    if(e.key==='Escape'){ closeEditModal(); closeGroupEditModal(); if(activeGroupId) closePicker(); }
+    if(e.key==='Escape'){ closeEditModal(); closeGroupEditModal(); if(activeGroupId) closePicker(); if(focusedGroupId){ focusedGroupId=null; renderGroupsList(); } }
 });
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ loadGroups(); renderGroupsList(); refreshData(); } });
 </script>
