@@ -276,37 +276,6 @@
             populateGroupSelect();
         }
 
-        // Physically reorders movieData so that entries belonging to a
-        // custom group sit contiguously in that group's block (mirroring
-        // exactly what All Entries → Manage Groups does whenever group
-        // membership changes there). Without this, a newly-added entry
-        // that gets assigned to a group only shows up at the bottom of
-        // the group's own member list, while the underlying movieData
-        // array (and therefore the exported JSON / "recent entries" list)
-        // still has it sitting at the very end of the whole collection.
-        function applyGroupOrder() {
-            if (typeof getGroupsData !== 'function' || typeof groupItemKey !== 'function') return;
-            const groups = getGroupsData();
-            if (!groups.length) return;
-
-            const groupedKeys = new Set();
-            const ordered = [];
-            groups.forEach(g => {
-                (g.memberKeys || []).forEach(k => {
-                    const key = groupItemKey(k);
-                    if (!groupedKeys.has(key)) {
-                        groupedKeys.add(key);
-                        const real = movieData.find(m => groupItemKey(m) === key);
-                        if (real) ordered.push({ item: real, groupName: g.name });
-                    }
-                });
-            });
-            const ungrouped = movieData.filter(m => !groupedKeys.has(groupItemKey(m)));
-            movieData.length = 0;
-            ordered.forEach(({ item, groupName }) => { delete item.group; item.group = groupName; movieData.push(item); });
-            ungrouped.forEach(item => { delete item.group; movieData.push(item); });
-        }
-
         // Add new entry
         function addEntry() {
             const name = document.getElementById('name').value.trim();
@@ -337,12 +306,8 @@
             };
             movieData.push(newEntry);
 
-            // Assign to the chosen category (if any), then physically move the
-            // entry into that category's block within movieData so it lands
-            // right after the group's last existing member in the list/JSON —
-            // not always at the very end of the whole collection.
+            // Optional: place the new entry at the bottom of the chosen category
             assignEntryToSelectedGroup(newEntry);
-            applyGroupOrder();
 
             // Clear form
             document.getElementById('name').value = '';
