@@ -18,12 +18,47 @@ async function loadMovieData() {
         movieData = savedData;
         console.log('Data loaded:', movieData.length, 'items');
     } else {
-        startWithDemoData();
+        const seeded = await tryLoadSeedFile();
+        if (!seeded) {
+            startWithDemoData();
+        }
     }
 
     // Update the page content
     if (typeof updatePageSpecificContent === 'function') {
         updatePageSpecificContent();
+    }
+}
+
+// If there's no data yet in localStorage/Firebase, try loading the bundled
+// movie-data.json (the same {entries, groups} format used by "Download
+// Backup" / "Restore from File") as the starting collection, so a fresh
+// browser picks up your real movies/shows AND your custom groups instead of
+// the small hardcoded demo list. Only kicks in when nothing else is found.
+async function tryLoadSeedFile() {
+    try {
+        const res = await fetch('movie-data.json', { cache: 'no-store' });
+        if (!res.ok) return false;
+        const data = await res.json();
+
+        let entries = null;
+        let groups = [];
+        if (Array.isArray(data)) {
+            entries = data;
+        } else if (data && Array.isArray(data.entries)) {
+            entries = data.entries;
+            groups = Array.isArray(data.groups) ? data.groups : [];
+        }
+        if (!entries || !entries.length) return false;
+
+        movieData = entries;
+        localStorage.setItem('movieGroups', JSON.stringify(groups));
+        saveMovieData();
+        console.log('✅ Seeded from movie-data.json:', entries.length, 'items,', groups.length, 'groups');
+        return true;
+    } catch (error) {
+        console.log('No seed file available (this is fine if you already have saved data):', error.message);
+        return false;
     }
 }
 
