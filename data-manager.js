@@ -210,3 +210,64 @@ function saveGroupsToFirebase() {
 
 window.manualBackupNow    = manualBackupNow;
 window.saveGroupsToFirebase = saveGroupsToFirebase;
+
+// =============================================
+// SHARED GROUP HELPERS
+// (used by index.html for optional category assignment on add,
+//  and by stats.html for group/category statistics)
+// =============================================
+
+// Read the custom groups array straight from localStorage.
+function getGroupsData() {
+    try {
+        return JSON.parse(localStorage.getItem(GROUPS_KEY) || '[]');
+    } catch (e) {
+        console.error('Error reading groups:', e);
+        return [];
+    }
+}
+
+// Persist the custom groups array and kick off a debounced cloud backup.
+function setGroupsData(groups) {
+    try {
+        localStorage.setItem(GROUPS_KEY, JSON.stringify(groups));
+        if (typeof saveGroupsToFirebase === 'function') saveGroupsToFirebase();
+        return true;
+    } catch (e) {
+        console.error('Error saving groups:', e);
+        return false;
+    }
+}
+
+// Identity key for matching a group's memberKeys entries against real movie data.
+function groupItemKey(item) {
+    return `${item.name}||${item.releaseYear}||${item.type}`;
+}
+
+// Compute per-group stats (entry count, total/avg watch time) plus how many
+// entries in `movies` aren't assigned to any group.
+function computeGroupStats(movies, groups) {
+    const assigned = new Set();
+    const stats = (groups || []).map(g => {
+        const members = (g.memberKeys || [])
+            .map(k => movies.find(m => groupItemKey(m) === groupItemKey(k)))
+            .filter(Boolean);
+        members.forEach(m => assigned.add(groupItemKey(m)));
+        const totalMinutes = members.reduce((sum, m) => sum + (m.duration || 0), 0);
+        return {
+            id: g.id,
+            name: g.name,
+            color: g.color,
+            count: members.length,
+            totalMinutes,
+            avgMinutes: members.length ? totalMinutes / members.length : 0
+        };
+    });
+    const ungroupedCount = (movies || []).filter(m => !assigned.has(groupItemKey(m))).length;
+    return { stats, ungroupedCount };
+}
+
+window.getGroupsData    = getGroupsData;
+window.setGroupsData    = setGroupsData;
+window.groupItemKey     = groupItemKey;
+window.computeGroupStats = computeGroupStats;

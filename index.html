@@ -81,6 +81,14 @@
                         <label><input type="radio" name="type" value="TV Show"> 📺 TV Show</label>
                     </div>
                 </div>
+                <div class="input-field">
+                    <label><span>🏷️</span> Category <span style="font-weight:400;text-transform:none;letter-spacing:0;color:#94a3b8;font-size:0.85em;">(optional)</span></label>
+                    <select id="groupSelect" onchange="onGroupSelectChange()">
+                        <option value="">— No category —</option>
+                        <option value="__new__">＋ Create new category…</option>
+                    </select>
+                    <input type="text" id="newGroupNameInput" placeholder="New category name…" maxlength="40" style="display:none;">
+                </div>
                 <button class="add-btn" onclick="addEntry()">
                     <span>➕</span> ADD
                 </button>
@@ -193,10 +201,79 @@
     <script>
         let currentEditIndex = -1;
 
+        // Colour palette for auto-created categories — kept in sync with the
+        // palette used on the All Entries → Manage Groups panel.
+        const GROUP_PALETTE = ['#ffd700','#ff6b6b','#4ade80','#60a5fa','#f472b6','#fb923c','#a78bfa','#34d399','#38bdf8','#e879f9'];
+
         // Override page-specific update
         function updatePageSpecificContent() {
             updateStats();
             updateRecentEntries();
+            populateGroupSelect();
+        }
+
+        // ── Optional category picker (Add Entry form) ──────────────────
+        function populateGroupSelect() {
+            const sel = document.getElementById('groupSelect');
+            if (!sel) return;
+            const groups = (typeof getGroupsData === 'function') ? getGroupsData() : [];
+            const prevValue = sel.value;
+            sel.innerHTML = '<option value="">— No category —</option>' +
+                groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('') +
+                '<option value="__new__">＋ Create new category…</option>';
+            if ([...sel.options].some(o => o.value === prevValue)) sel.value = prevValue;
+        }
+
+        function onGroupSelectChange() {
+            const sel = document.getElementById('groupSelect');
+            const newInput = document.getElementById('newGroupNameInput');
+            if (sel.value === '__new__') {
+                newInput.style.display = 'block';
+                newInput.focus();
+            } else {
+                newInput.style.display = 'none';
+                newInput.value = '';
+            }
+        }
+
+        // Assigns a freshly-added entry to the chosen/newly-created category,
+        // appending it to the very bottom of that category's member list.
+        // Entirely optional — if no category is chosen, nothing happens.
+        function assignEntryToSelectedGroup(entrySnap) {
+            const sel = document.getElementById('groupSelect');
+            if (!sel || !sel.value) return;
+            if (typeof getGroupsData !== 'function' || typeof setGroupsData !== 'function') return;
+
+            const groups = getGroupsData();
+            const memberSnap = {
+                name: entrySnap.name,
+                releaseYear: entrySnap.releaseYear,
+                duration: entrySnap.duration,
+                type: entrySnap.type
+            };
+
+            if (sel.value === '__new__') {
+                const newName = document.getElementById('newGroupNameInput').value.trim();
+                if (!newName) return; // no name typed — leave entry uncategorized
+                const existing = groups.find(g => g.name.toLowerCase() === newName.toLowerCase());
+                if (existing) {
+                    existing.memberKeys.push(memberSnap);
+                } else {
+                    const color = GROUP_PALETTE[groups.length % GROUP_PALETTE.length];
+                    groups.push({ id: 'g_' + Date.now(), name: newName, color, memberKeys: [memberSnap] });
+                }
+            } else {
+                const g = groups.find(g => g.id === sel.value);
+                if (g) g.memberKeys.push(memberSnap);
+            }
+
+            setGroupsData(groups);
+
+            // Reset the picker for the next entry
+            sel.value = '';
+            document.getElementById('newGroupNameInput').value = '';
+            document.getElementById('newGroupNameInput').style.display = 'none';
+            populateGroupSelect();
         }
 
         // Add new entry
@@ -221,12 +298,16 @@
                 }
             }
 
-            movieData.push({
+            const newEntry = {
                 name: name,
                 releaseYear: parseInt(releaseYear),
                 duration: Math.round(parseFloat(duration) * 10) / 10,
                 type: type
-            });
+            };
+            movieData.push(newEntry);
+
+            // Optional: place the new entry at the bottom of the chosen category
+            assignEntryToSelectedGroup(newEntry);
 
             // Clear form
             document.getElementById('name').value = '';

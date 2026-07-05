@@ -956,6 +956,46 @@ function batchMoveItems(gId,dir){
     showSaveIndicator('Items reordered','↕️');
 }
 
+// Reads the "Go to #" input for a group and applies the position move.
+function goToPositionFromInput(gId){
+    const inp=document.getElementById(`posinput_${gId}`);
+    if(!inp) return;
+    const val=parseInt(inp.value,10);
+    if(isNaN(val)||val<1){ alert('Enter a valid position number (1 or higher).'); return; }
+    batchMoveItemsToPosition(gId,val);
+    inp.value='';
+}
+
+// Move the selected item(s) within a group to a specific 1-indexed position.
+// If multiple items are selected (e.g. currently at different positions),
+// they are moved together — in their existing relative order — starting at
+// that position and continuing onward, exactly like requested: "position 10
+// and onwards".
+function batchMoveItemsToPosition(gId,targetPos){
+    const g=groupById(gId); if(!g) return;
+    const s=getGIS(gId); if(!s.selected.size) return;
+    const mc=g.memberKeys;
+
+    let indices=mc.map((k,i)=>s.selected.has(ikey(k))?i:-1).filter(i=>i!==-1);
+    indices.sort((a,b)=>a-b);
+    if(!indices.length) return;
+
+    const selectedItems=indices.map(i=>mc[i]);
+    const rest=mc.filter((_,i)=>!indices.includes(i));
+
+    // targetPos is 1-indexed as shown to the user; clamp within the
+    // remaining (unselected) list so the move always lands somewhere valid.
+    let idx=targetPos-1;
+    if(idx<0) idx=0;
+    if(idx>rest.length) idx=rest.length;
+
+    rest.splice(idx,0,...selectedItems);
+    g.memberKeys=rest;
+
+    saveGroups(); renderGroupsList(); applyFilters();
+    showSaveIndicator(`Moved to position ${idx+1}`,'🎯');
+}
+
 // Batch remove items from group (does NOT delete from movieData)
 function batchDeleteItems(gId){
     const g=groupById(gId); if(!g) return;
@@ -1120,6 +1160,12 @@ function renderGroupsList(){
                 <button class="bbtn down" onclick="batchMoveItems('${g.id}','down')"   ${selCount===0?'disabled':''}>▼ Down</button>
                 <button class="bbtn bot"  onclick="batchMoveItems('${g.id}','bottom')" ${selCount===0?'disabled':''}>⏬ Bottom</button>
                 <button class="bbtn del"  onclick="batchDeleteItems('${g.id}')"        ${selCount===0?'disabled':''}>🗑 Remove</button>
+                <span class="bt-label" style="margin-left:2px;">Go to #:</span>
+                <input type="number" id="posinput_${g.id}" min="1" max="${mc}" placeholder="pos"
+                    ${selCount===0?'disabled':''}
+                    style="width:56px;background:#0d1117;border:1.5px solid #21282f;border-radius:8px;padding:5px 6px;color:#e2e8f0;font-size:0.78em;text-align:center;outline:none;"
+                    onkeydown="if(event.key==='Enter'){event.preventDefault();goToPositionFromInput('${g.id}');}">
+                <button class="bbtn" style="color:#ffd700;border-color:#ffd70044;" onclick="goToPositionFromInput('${g.id}')" ${selCount===0?'disabled':''}>🎯 Go</button>
                 <div style="flex:1;"></div>
                 <button class="bbtn exit" onclick="exitItemSelMode('${g.id}')">✕ Exit</button>
             </div>`:'';

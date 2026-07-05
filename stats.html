@@ -64,6 +64,31 @@
         <div class="stats-grid" id="additionalStats">
             <!-- Will be populated dynamically -->
         </div>
+
+        <!-- Group / Category Statistics -->
+        <div class="table-section" id="groupStatsSection">
+            <div class="section-title">
+                <span>🏷️</span> Group / Category Insights
+            </div>
+            <div class="stats-grid" id="groupSummaryStats">
+                <!-- Will be populated dynamically -->
+            </div>
+            <div class="table-container" style="margin-top:20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Entries</th>
+                            <th>Total Watch Time</th>
+                            <th>Avg Watch Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="groupStatsBody">
+                        <tr><td colspan="4" class="empty-message">No custom groups created yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Save Indicator -->
@@ -91,6 +116,79 @@
             updateBreakdown(filteredData);
             updateRecords(filteredData, filter);
             updateAdditionalStats(filteredData);
+            updateGroupStats();
+        }
+
+        // Group / category statistics — always computed across the full
+        // collection (independent of the Movie/TV Show filter above), since
+        // a category can contain both movies and shows.
+        function updateGroupStats() {
+            const summaryEl = document.getElementById('groupSummaryStats');
+            const bodyEl = document.getElementById('groupStatsBody');
+            if (!summaryEl || !bodyEl) return;
+
+            const groups = (typeof getGroupsData === 'function') ? getGroupsData() : [];
+            const { stats, ungroupedCount } = (typeof computeGroupStats === 'function')
+                ? computeGroupStats(movieData, groups)
+                : { stats: [], ungroupedCount: movieData.length };
+
+            if (!groups.length) {
+                summaryEl.innerHTML = '';
+                bodyEl.innerHTML = '<tr><td colspan="4" class="empty-message">No custom groups created yet — create some from All Entries → Manage Groups.</td></tr>';
+                return;
+            }
+
+            const withItems = stats.filter(s => s.count > 0);
+            const mostGroup  = withItems.length ? withItems.reduce((a, b) => b.count > a.count ? b : a) : null;
+            const leastGroup = withItems.length ? withItems.reduce((a, b) => b.count < a.count ? b : a) : null;
+            const totalEntriesGrouped = stats.reduce((sum, s) => sum + s.count, 0);
+            const avgEntriesPerGroup = groups.length ? totalEntriesGrouped / groups.length : 0;
+
+            summaryEl.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon">🏷️</div>
+                    <h3>Total Groups</h3>
+                    <div class="stat-value">${groups.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <h3>Most Populated</h3>
+                    <div class="stat-value" style="font-size:1.3em;">${mostGroup ? mostGroup.name : '—'}</div>
+                    <div style="color:#94a3b8;font-size:0.9em;margin-top:5px;">${mostGroup ? mostGroup.count + ' entries' : ''}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📉</div>
+                    <h3>Least Populated</h3>
+                    <div class="stat-value" style="font-size:1.3em;">${leastGroup ? leastGroup.name : '—'}</div>
+                    <div style="color:#94a3b8;font-size:0.9em;margin-top:5px;">${leastGroup ? leastGroup.count + ' entries' : ''}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <h3>Avg Entries / Group</h3>
+                    <div class="stat-value">${avgEntriesPerGroup.toFixed(1)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❔</div>
+                    <h3>Ungrouped Entries</h3>
+                    <div class="stat-value">${ungroupedCount}</div>
+                </div>
+            `;
+
+            bodyEl.innerHTML = stats.map(s => {
+                const hours = s.totalMinutes / 60;
+                const avgHours = s.avgMinutes / 60;
+                return `<tr>
+                    <td>
+                        <span style="display:inline-flex;align-items:center;gap:8px;">
+                            <span style="width:12px;height:12px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0;"></span>
+                            ${s.name}
+                        </span>
+                    </td>
+                    <td>${s.count}</td>
+                    <td style="color:#ffd700;">${hours.toFixed(1)}h</td>
+                    <td style="color:#ffd700;">${s.count ? avgHours.toFixed(1) + 'h' : '—'}</td>
+                </tr>`;
+            }).join('');
         }
 
         // Update time breakdown
