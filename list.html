@@ -411,7 +411,7 @@
             <button id="groupSelModeBtn" onclick="toggleGroupSelMode()">☑ Select Groups</button>
         </div>
 
-        <div id="groupsList"></div>
+        <div id="groupsList" style="max-height:520px;overflow-y:auto;padding-right:6px;"></div>
     </div>
     </div>
     <!-- ═══════════ END GROUPS PANEL ═══════════ -->
@@ -445,6 +445,10 @@
                 <label><input type="radio" name="editType" value="Movie"> 🎬 Movie</label>
                 <label><input type="radio" name="editType" value="TV Show"> 📺 TV Show</label>
             </div>
+        </div>
+        <div class="modal-input">
+            <label>Group / Category</label>
+            <select id="editGroup"></select>
         </div>
         <div class="modal-buttons">
             <button class="modal-btn cancel" onclick="closeEditModal()">Cancel</button>
@@ -636,6 +640,11 @@ function openEditModal(i){
     document.getElementById('editYear').value=m.releaseYear;
     document.getElementById('editDuration').value=m.duration;
     document.querySelectorAll('input[name="editType"]').forEach(r=>r.checked=(r.value===m.type));
+    const groupSel=document.getElementById('editGroup');
+    const currentGroup=groupOfKey(ikey(m));
+    groupSel.innerHTML='<option value="">— No Group —</option>'+customGroups.map(g=>
+        `<option value="${g.id}" ${currentGroup&&currentGroup.id===g.id?'selected':''}>${g.name}</option>`
+    ).join('');
     document.getElementById('editModal').style.display='flex';
 }
 function closeEditModal(){ document.getElementById('editModal').style.display='none'; currentEditIndex=-1; }
@@ -645,11 +654,21 @@ function saveEdit(){
     const year=parseInt(document.getElementById('editYear').value);
     const dur=parseFloat(document.getElementById('editDuration').value);
     const type=document.querySelector('input[name="editType"]:checked').value;
+    const groupId=document.getElementById('editGroup').value;
     if(!name||!year||!dur){ alert('Please fill in all fields!'); return; }
     const oldKey=ikey(movieData[currentEditIndex]);
     const newSnap={name,releaseYear:year,duration:Math.round(dur*10)/10,type};
     movieData[currentEditIndex]=newSnap;
+    // Keep the entry's identity in sync wherever it currently sits in a group
     customGroups.forEach(g=>{ g.memberKeys=g.memberKeys.map(k=>ikey(k)===oldKey?{...newSnap}:k); });
+    // Then apply whichever group the user picked in the modal, moving the
+    // entry out of any other group it may have been in
+    const newKey=ikey(newSnap);
+    customGroups.forEach(g=>{ g.memberKeys=g.memberKeys.filter(k=>ikey(k)!==newKey); });
+    if(groupId){
+        const g=groupById(groupId);
+        if(g) g.memberKeys.push({...newSnap});
+    }
     saveGroups(); closeEditModal(); updatePageSpecificContent();
     if(document.getElementById('groupPanelWrap').style.display!=='none') renderGroupsList();
     showSaveIndicator('Entry updated','✏️');

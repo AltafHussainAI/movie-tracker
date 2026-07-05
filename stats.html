@@ -69,6 +69,18 @@
         <div class="table-section" id="groupStatsSection">
             <div class="section-title">
                 <span>🏷️</span> Group / Category Insights
+                <div class="filter-group" style="margin-left:auto;">
+                    <label>🔽 Sort by:</label>
+                    <select id="groupSortFilter" onchange="renderGroupStats()">
+                        <option value="default">Default Order</option>
+                        <option value="entries-desc">Most Entries</option>
+                        <option value="entries-asc">Least Entries</option>
+                        <option value="watchtime-desc">Highest Watch Time</option>
+                        <option value="watchtime-asc">Lowest Watch Time</option>
+                        <option value="avgwatchtime-desc">Highest Avg Watch Time</option>
+                        <option value="avgwatchtime-asc">Lowest Avg Watch Time</option>
+                    </select>
+                </div>
             </div>
             <div class="stats-grid" id="groupSummaryStats">
                 <!-- Will be populated dynamically -->
@@ -116,39 +128,109 @@
             updateBreakdown(filteredData);
             updateRecords(filteredData, filter);
             updateAdditionalStats(filteredData);
-            updateGroupStats();
+            refreshGroupStats();
         }
 
-        // Group / category statistics — always computed across the full
-        // collection (independent of the Movie/TV Show filter above), since
-        // a category can contain both movies and shows.
-        function updateGroupStats() {
+        // Cache of the last group stats we computed, so the sort dropdown can
+        // just re-render instantly without re-fetching from Firebase.
+        let _groupStatsCache = null;
+        let _groupUngroupedCache = 0;
+        let _groupsCountCache = 0;
+
+        // Group / category statistics — fetched DIRECTLY from Firebase (the
+        // same cloud backup Firestore doc used everywhere else in the app)
+        // every time this page loads or the filter changes, instead of
+        // relying on whatever happens to be cached in localStorage. This
+        // way the Statistics page always reflects the latest data pushed to
+        // the cloud, without needing to re-upload a backup JSON file.
+        async function refreshGroupStats() {
             const summaryEl = document.getElementById('groupSummaryStats');
             const bodyEl = document.getElementById('groupStatsBody');
             if (!summaryEl || !bodyEl) return;
 
-            const groups = (typeof getGroupsData === 'function') ? getGroupsData() : [];
-            const { stats, ungroupedCount } = (typeof computeGroupStats === 'function')
-                ? computeGroupStats(movieData, groups)
-                : { stats: [], ungroupedCount: movieData.length };
+            bodyEl.innerHTML = '<tr><td colspan="4" class="empty-message">☁️ Fetching latest groups from Firebase…</td></tr>';
 
-            if (!groups.length) {
+            let cloudMovies = null;
+            let cloudGroups = null;
+            try {
+                const db = (typeof initFirebase === 'function') ? initFirebase() : null;
+                if (db) {
+                    const docSnap = await db.collection('movies').doc('data').get();
+                    if (docSnap.exists) {
+                        const remote = docSnap.data();
+                        if (Array.isArray(remote.movies)) cloudMovies = remote.movies;
+                        if (Array.isArray(remote.groups)) cloudGroups = remote.groups;
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Could not fetch group stats directly from Firebase — falling back to local data:', error);
+            }
+
+            // Fall back to whatever's local only if the direct Firebase fetch failed.
+            const sourceMovies = cloudMovies !== null ? cloudMovies : movieData;
+            const groups = cloudGroups !== null ? cloudGroups : ((typeof getGroupsData === 'function') ? getGroupsData() : []);
+
+            const { stats, ungroupedCount } = (typeof computeGroupStats === 'function')
+                ? computeGroupStats(sourceMovies, groups)
+                : { stats: [], ungroupedCount: sourceMovies.length };
+
+            _groupStatsCache = stats;
+            _groupUngroupedCache = ungroupedCount;
+            _groupsCountCache = groups.length;
+
+            renderGroupStats();
+        }
+
+        // Renders the group summary cards + table from the cached stats,
+        // applying whichever sort option is currently selected. Doesn't
+        // re-fetch from Firebase, so switching sort order is instant.
+        function renderGroupStats() {
+            const summaryEl = document.getElementById('groupSummaryStats');
+            const bodyEl = document.getElementById('groupStatsBody');
+            if (!summaryEl || !bodyEl) return;
+
+            const stats = _groupStatsCache;
+            const ungroupedCount = _groupUngroupedCache;
+            const groupsCount = _groupsCountCache;
+
+            if (stats === null) return; // still loading
+
+            if (!groupsCount) {
                 summaryEl.innerHTML = '';
                 bodyEl.innerHTML = '<tr><td colspan="4" class="empty-message">No custom groups created yet — create some from All Entries → Manage Groups.</td></tr>';
                 return;
+            }
+
+            const sortBy = document.getElementById('groupSortFilter') ? document.getElementById('groupSortFilter').value : 'default';
+            const sortedStats = [...stats];
+            switch (sortBy) {
+                case 'entries-desc':
+                    sortedStats.sort((a, b) => b.count - a.count); break;
+                case 'entries-asc':
+                    sortedStats.sort((a, b) => a.count - b.count); break;
+                case 'watchtime-desc':
+                    sortedStats.sort((a, b) => b.totalMinutes - a.totalMinutes); break;
+                case 'watchtime-asc':
+                    sortedStats.sort((a, b) => a.totalMinutes - b.totalMinutes); break;
+                case 'avgwatchtime-desc':
+                    sortedStats.sort((a, b) => b.avgMinutes - a.avgMinutes); break;
+                case 'avgwatchtime-asc':
+                    sortedStats.sort((a, b) => a.avgMinutes - b.avgMinutes); break;
+                default:
+                    break; // keep original order
             }
 
             const withItems = stats.filter(s => s.count > 0);
             const mostGroup  = withItems.length ? withItems.reduce((a, b) => b.count > a.count ? b : a) : null;
             const leastGroup = withItems.length ? withItems.reduce((a, b) => b.count < a.count ? b : a) : null;
             const totalEntriesGrouped = stats.reduce((sum, s) => sum + s.count, 0);
-            const avgEntriesPerGroup = groups.length ? totalEntriesGrouped / groups.length : 0;
+            const avgEntriesPerGroup = groupsCount ? totalEntriesGrouped / groupsCount : 0;
 
             summaryEl.innerHTML = `
                 <div class="stat-card">
                     <div class="stat-icon">🏷️</div>
                     <h3>Total Groups</h3>
-                    <div class="stat-value">${groups.length}</div>
+                    <div class="stat-value">${groupsCount}</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon">📈</div>
@@ -174,7 +256,7 @@
                 </div>
             `;
 
-            bodyEl.innerHTML = stats.map(s => {
+            bodyEl.innerHTML = sortedStats.map(s => {
                 const hours = s.totalMinutes / 60;
                 const avgHours = s.avgMinutes / 60;
                 return `<tr>

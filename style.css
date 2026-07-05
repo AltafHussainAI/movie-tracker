@@ -572,7 +572,8 @@ tr:hover {
     margin-bottom: 8px;
 }
 
-.modal-input input {
+.modal-input input,
+.modal-input select {
     width: 100%;
     background: #161a1f;
     border: 2px solid #333b45;
@@ -581,7 +582,8 @@ tr:hover {
     color: #ffffff;
 }
 
-.modal-input input:focus {
+.modal-input input:focus,
+.modal-input select:focus {
     border-color: #ffd700;
     outline: none;
 }
